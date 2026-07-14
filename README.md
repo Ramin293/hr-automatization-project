@@ -1,11 +1,36 @@
-# HR Automatization Project
+# ERTIS OPERATIONS
 
-Dark, condensed, hairline-border frontend concept for an HR automation product.
+First operational frontend release for the corporate correspondence, document workflow and department operations platform of JSC SPK Ertis.
 
-## Commands
+The application opens directly into a developer workspace. It uses deterministic mock repositories and requires no backend or authentication.
+
+## Start locally
 
 ```powershell
-npm install
-npm run dev
-npm run build
+pnpm install
+pnpm dev
 ```
+
+Open `http://localhost:5173`.
+
+## Quality checks
+
+```powershell
+pnpm typecheck
+pnpm test
+pnpm build
+```
+
+## Runtime modes
+
+The current release implements mock mode. API, Camunda and signature adapter boundaries are documented and intentionally contain no secrets.
+
+```env
+VITE_DATA_MODE=mock
+VITE_WORKFLOW_MODE=mock
+VITE_SIGNATURE_MODE=mock
+VITE_NUMBERING_MODE=mock
+VITE_DEFAULT_LOCALE=ru
+```
+
+See [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md) for the exact v1.0.1 scope.
