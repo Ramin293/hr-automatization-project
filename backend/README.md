@@ -1,7 +1,20 @@
-# ERTIS OPERATIONS backend
+# ERTIS OPERATIONS HR backend
 
-This directory is reserved for the future backend implementation.
+NestJS and PostgreSQL backend for the HR workspace. The current release implements employee records and the leave-request workflow behind one API gateway. It does not implement other department business modules.
 
-The backend will expose one API Gateway or Backend for Frontend to the browser and coordinate domain services for correspondence, documents, registry numbering, workflow orchestration, tasks, signatures, notifications, organization and audit.
+## Local start
 
-No production authentication, Camunda credentials, signing keys, database credentials or service secrets belong in frontend code. Backend technology and deployment topology will be selected in a dedicated implementation slice.
+```powershell
+Copy-Item .env.example .env
+docker compose up -d postgres rabbitmq
+pnpm install
+pnpm prisma:migrate
+pnpm prisma:seed
+pnpm start:dev
+```
+
+OpenAPI is available at `http://localhost:3000/api/docs` and health at `http://localhost:3000/health`.
+
+Development requests require `X-Dev-User-Id`, `X-Dev-Role`, and optionally `X-Dev-Department-Id`. These headers are rejected in production.
+
+See [docs/HR_BACKEND_IMPLEMENTATION_PLAN.md](docs/HR_BACKEND_IMPLEMENTATION_PLAN.md) for scope and architecture.
