@@ -1,36 +1,22 @@
-# ERTIS OPERATIONS
+# HR Automatization Project
 
-First operational frontend release for the corporate correspondence, document workflow and department operations platform of JSC SPK Ertis.
+Monorepo for the ERTIS OPERATIONS corporate document management and workflow automation platform.
 
-The application opens directly into a developer workspace. It uses deterministic mock repositories and requires no backend or authentication.
+## Structure
 
-## Start locally
+- `frontend/` - React, TypeScript and Vite application with deterministic mock repositories.
+- `backend/` - reserved backend service boundary for the future API Gateway/BFF and domain services.
+
+## Frontend
 
 ```powershell
+cd frontend
 pnpm install
 pnpm dev
 ```
 
-Open `http://localhost:5173`.
+The frontend opens at `http://localhost:5173` by default. Detailed architecture and release scope are documented in `frontend/docs/`.
 
-## Quality checks
+## Backend
 
-```powershell
-pnpm typecheck
-pnpm test
-pnpm build
-```
-
-## Runtime modes
-
-The current release implements mock mode. API, Camunda and signature adapter boundaries are documented and intentionally contain no secrets.
-
-```env
-VITE_DATA_MODE=mock
-VITE_WORKFLOW_MODE=mock
-VITE_SIGNATURE_MODE=mock
-VITE_NUMBERING_MODE=mock
-VITE_DEFAULT_LOCALE=ru
-```
-
-See [docs/IMPLEMENTATION_PLAN.md](docs/IMPLEMENTATION_PLAN.md) for the exact v1.0.1 scope.
+Backend implementation has not started yet. Its folder documents the intended security and integration boundaries without committing placeholder production code.
