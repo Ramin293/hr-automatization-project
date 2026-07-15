@@ -65,7 +65,7 @@ describe('application runtime', () => {
 
     view.unmount();
     renderRoute('/processes');
-    expect(await screen.findByRole('heading', { name: 'Процессы HR' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Процессы' })).toBeTruthy();
     expect((await screen.findAllByText('Согласование отпуска')).length).toBeGreaterThan(0);
     expect(screen.queryByText('Обработка входящей корреспонденции')).toBeNull();
   });
