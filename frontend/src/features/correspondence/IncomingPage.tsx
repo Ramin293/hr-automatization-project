@@ -9,15 +9,15 @@ import { useDeveloperStore } from '../../shared/store';
 import { useDepartmentContext } from '../hr/context/DepartmentContext';
 
 const departmentsList = [
-  'Департамент документооборота и управления персоналом',
-  'Департамент инвестиций',
-  'Департамент кредитования',
-  'Департамент активов',
-  'Департамент строительства',
-  'Департамент стабильности фонда',
-  'Департамент экономического планирования',
-  'Юридический департамент',
-  'Бухгалтерия'
+  { name: 'Департамент документооборота и управления персоналом', label: 'Документооборот и кадры' },
+  { name: 'Департамент инвестиций', label: 'Инвестиции' },
+  { name: 'Департамент кредитования', label: 'Кредитование' },
+  { name: 'Департамент активов', label: 'Активы' },
+  { name: 'Департамент строительства', label: 'Строительство' },
+  { name: 'Департамент стабильности фонда', label: 'Стабильность фонда' },
+  { name: 'Департамент экономического планирования', label: 'Экономика' },
+  { name: 'Юридический департамент', label: 'Юридический' },
+  { name: 'Бухгалтерия', label: 'Бухгалтерия' }
 ];
 
 function normalizeDept(name: string): string {
@@ -65,8 +65,8 @@ export default function IncomingPage() {
       <button className={activeTab === 'all' ? 'active' : ''} onClick={() => setActiveTab('all')}>Все <b>{getCount('all')}</b></button>
       <button className={activeTab === 'external' ? 'active' : ''} onClick={() => setActiveTab('external')}>Внешние <b>{getCount('external')}</b></button>
       {departmentsList.map((dept) => (
-        <button key={dept} className={activeTab === dept ? 'active' : ''} onClick={() => setActiveTab(dept)}>
-          {dept} {getCount(dept) > 0 && <b>{getCount(dept)}</b>}
+        <button key={dept.name} className={activeTab === dept.name ? 'active' : ''} onClick={() => setActiveTab(dept.name)}>
+          {dept.label} {getCount(dept.name) > 0 && <b>{getCount(dept.name)}</b>}
         </button>
       ))}
     </div>
