@@ -344,6 +344,12 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
 .hr-process-health strong { font-family: var(--font-condensed); font-size: 24px; font-weight: 500; margin-top: 7px; }
 .hr-process-health small { color: var(--muted); font-size: 7px; margin-top: 3px; }
 .hr-inline-empty { color: var(--muted); font-size: 9px; padding: 35px 16px; text-align: center; }
+.hr-add-employee-shortcut { align-items: center; display: grid; gap: 13px; grid-template-columns: 36px 1fr auto; min-height: 130px; padding: 17px; }
+.hr-add-employee-shortcut > span { align-items: center; background: color-mix(in srgb, var(--teal) 10%, transparent); display: flex; height: 36px; justify-content: center; width: 36px; }
+.hr-add-employee-shortcut > div { display: flex; flex-direction: column; }
+.hr-add-employee-shortcut strong { font-size: 9px; }
+.hr-add-employee-shortcut p { color: var(--muted); font-size: 8px; line-height: 1.55; margin: 6px 0 0; }
+.hr-add-employee-shortcut small { color: var(--teal); font-size: 7px; margin-top: 7px; }
 
 .hr-employee-hero { align-items: center; background: var(--paper); border: 1px solid var(--border); border-radius: var(--radius); display: grid; gap: 22px; grid-template-columns: 1.5fr .75fr .75fr; margin-bottom: 14px; min-height: 115px; padding: 18px; }
 .hr-person { align-items: center; display: flex; gap: 13px; }
@@ -457,10 +463,23 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
 .hr-local-only-banner small { color: var(--muted); font-size: 7px; margin-top: 4px; }
 .hr-form-notice { align-items: center; background: var(--paper); border: 1px solid var(--border); color: var(--teal); display: flex; font-size: 8px; justify-content: space-between; margin-bottom: 10px; padding: 9px 12px; }
 .hr-form-notice button { background: transparent; border: 0; color: var(--muted); }
+.hr-generation-error { background: color-mix(in srgb, var(--coral) 8%, var(--paper)); border: 1px solid color-mix(in srgb, var(--coral) 35%, var(--border)); color: var(--coral); font-size: 8px; margin-bottom: 10px; padding: 10px 12px; }
 .hr-add-employee-form { display: grid; gap: 14px; }
 .hr-add-employee-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .hr-add-employee-fields .span-two { grid-column: 1 / -1; }
 .hr-field-error { color: var(--coral)!important; font-size: 7px!important; margin: 0!important; }
+.hr-add-employee-fields input[readonly] { background: var(--soft); color: var(--muted); }
+.hr-attachment-controls { align-items: center; border-bottom: 1px solid var(--border); display: flex; gap: 9px; padding: 14px 17px; }
+.hr-attachment-controls select { background: var(--canvas); border: 1px solid var(--border); border-radius: var(--radius); color: var(--ink); font-size: 8px; min-height: 34px; padding: 0 10px; }
+.hr-attachment-controls label { cursor: pointer; }
+.hr-attachment-controls input { display: none; }
+.hr-attachment-list { display: grid; list-style: none; margin: 0; padding: 0 17px; }
+.hr-attachment-list li { align-items: center; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; min-height: 52px; }
+.hr-attachment-list li:last-child { border-bottom: 0; }
+.hr-attachment-list li > span { display: flex; flex-direction: column; }
+.hr-attachment-list strong { font-size: 8px; }
+.hr-attachment-list small { color: var(--muted); font-size: 7px; margin-top: 4px; }
+.hr-attachments-empty { color: var(--muted); font-size: 8px; padding: 24px 17px; text-align: center; }
 .hr-attachment-zone { align-items: flex-start; display: flex; gap: 12px; padding: 18px; }
 .hr-attachment-zone > svg { color: var(--teal); }
 .hr-attachment-zone label { cursor: pointer; display: flex; flex-direction: column; font-size: 9px; }
@@ -483,6 +502,11 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
 .hr-memorandum-preview dl { display: grid; grid-template-columns: 120px 1fr; }
 .hr-memorandum-preview dd { margin: 0; }
 .hr-memorandum-preview footer { font-family: serif; font-size: 12px; margin-top: 60px; }
+.hr-confirm-dialog { width: min(430px, 100%); }
+.hr-confirm-dialog > p { color: var(--muted); font-size: 9px; line-height: 1.6; margin: 0; padding: 18px; }
+.hr-confirm-dialog > footer { border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; padding: 12px 18px; }
+.spin { animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 1180px) {
   .hr-metric-grid { grid-template-columns: repeat(3, 1fr); }
@@ -520,7 +544,10 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
   .hr-add-employee-fields .span-two { grid-column: auto; }
   .hr-attachment-zone { flex-wrap: wrap; }
   .hr-attachment-zone ul { border-left: 0; border-top: 1px solid var(--border); flex-basis: 100%; margin: 5px 0 0; padding: 12px 0 0; }
+  .hr-attachment-controls { align-items: stretch; flex-direction: column; }
   .hr-add-employee-actions { align-items: stretch; flex-direction: column; }
   .hr-add-employee-actions > span { margin: 0 0 4px; }
   .hr-memorandum-preview article { padding: 28px 24px; }
+  .hr-add-employee-shortcut { grid-template-columns: 36px 1fr; }
+  .hr-add-employee-shortcut .primary-button { grid-column: 1 / -1; justify-content: center; }
 }

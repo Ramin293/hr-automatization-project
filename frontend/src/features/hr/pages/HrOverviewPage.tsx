@@ -8,6 +8,7 @@ import { useDeveloperStore } from '../../../shared/store';
 import { hrRepository } from '../api';
 import { HrSubnav } from '../components/HrSubnav';
 import { LeaveStatus } from '../components/HrStatus';
+import { restoreEmployeeDraft } from '../add-employee/draft';
 
 export default function HrOverviewPage() {
   const persona = useDeveloperStore((state) => state.persona);
@@ -41,6 +42,7 @@ export default function HrOverviewPage() {
   }
 
   const stats = overview.data!;
+  const addEmployeeDraft = restoreEmployeeDraft(localStorage);
   const pending = leaveRequests.data!.filter((item) => item.status === 'hr_review');
   return <>
     <HrSubnav />
@@ -55,6 +57,7 @@ export default function HrOverviewPage() {
       <article><span className="tone-teal"><Activity size={18} /></span><div><small>Активные процессы</small><strong>{stats.activeProcesses}</strong><em>Согласования HR</em></div></article>
     </div>
     <div className="hr-dashboard-grid">
+      <Section title="Добавить сотрудника" meta={addEmployeeDraft ? '1 локальный черновик' : 'Черновиков нет'}><div className="hr-add-employee-shortcut"><span className="tone-teal"><UserPlus size={20} /></span><div><strong>Служебная записка на приём</strong><p>Введите персональные и кадровые данные будущего сотрудника и сформируйте официальный DOCX для согласования руководством.</p>{addEmployeeDraft && <small>Последнее сохранение: {addEmployeeDraft.savedAt.startsWith('1970-') ? 'в предыдущей версии' : new Date(addEmployeeDraft.savedAt).toLocaleString('ru-RU')}</small>}</div><Link className="primary-button" to="/hr/hiring/add-employee">{addEmployeeDraft ? 'Продолжить' : 'Добавить сотрудника'}</Link></div></Section>
       <Section title="Заявки на проверку" meta={`${pending.length} ожидают HR`}><div className="hr-request-list">{pending.length ? pending.map((request) => <article key={request.id}><span className="hr-list-icon"><CalendarCheck2 size={17} /></span><div><strong>{request.employeeName}</strong><small>{request.leaveType} · {request.days} дней · {request.documentNumber}</small></div><LeaveStatus status={request.status} /></article>) : <div className="hr-inline-empty">Очередь проверки пуста</div>}</div><Link className="panel-link" to="/departments/hr/leave">Вся очередь <ArrowRight size={15} /></Link></Section>
       <Section title="Фокус HR на сегодня"><div className="hr-focus-list"><div><b className="tone-coral">04</b><span><strong>Просроченные задачи</strong><small>Onboarding и кадровые документы</small></span></div><div><b className="tone-gold">07</b><span><strong>Онбординг в работе</strong><small>2 сотрудника выходят на этой неделе</small></span></div><div><b className="tone-violet">05</b><span><strong>Испытательные сроки</strong><small>Ожидают итоговой оценки</small></span></div></div></Section>
       <Section title="Распределение персонала" meta="180 сотрудников"><div className="hr-workforce"><div style={{ '--share': '24%' } as React.CSSProperties}><span>Инвестиции</span><i><b /></i><strong>43</strong></div><div style={{ '--share': '20%' } as React.CSSProperties}><span>Активы</span><i><b /></i><strong>36</strong></div><div style={{ '--share': '17%' } as React.CSSProperties}><span>Строительство</span><i><b /></i><strong>31</strong></div><div style={{ '--share': '14%' } as React.CSSProperties}><span>Экономика</span><i><b /></i><strong>25</strong></div><div style={{ '--share': '11%' } as React.CSSProperties}><span>Юридический</span><i><b /></i><strong>20</strong></div></div></Section>

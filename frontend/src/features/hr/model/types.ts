@@ -31,7 +31,6 @@ export interface HrEmployee {
   personnelFileCompleteness: number;
   salary: number;
   currency: 'KZT';
-  candidateGroups: string[];
   skills: string[];
 }
 
