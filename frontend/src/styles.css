@@ -630,7 +630,8 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
 .card-meta small { color: var(--muted); font-size: 8px; }
 
 .hr-process-health-rich { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
-.hr-alert-card { display: flex; gap: 12px; padding: 12px 14px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--canvas); }
+.hr-alert-card { display: flex; gap: 12px; padding: 12px 14px; border-radius: var(--radius); border: 1px solid var(--border); background: var(--canvas); transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; cursor: pointer; }
+.hr-alert-card:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05); border-color: var(--muted); }
 .hr-alert-card .alert-icon { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; }
 .hr-alert-card.tone-gold .alert-icon { background: color-mix(in srgb, var(--gold) 12%, transparent); color: var(--gold); }
 .hr-alert-card.tone-coral .alert-icon { background: color-mix(in srgb, var(--coral) 12%, transparent); color: var(--coral); }

@@ -93,27 +93,33 @@ export default function HrOverviewPage() {
     <div className="hr-overview-row-split-reverse">
       <Section title="Предупреждения">
         <div className="hr-process-health-rich">
-          <div className="hr-alert-card tone-gold">
-            <span className="alert-icon"><FileWarning size={18} /></span>
-            <div className="alert-details">
-              <strong>{stats.expiringContracts} договоров</strong>
-              <small>Истекают в ближайшие 30 дней. Требуется продление.</small>
+          <Link to="/hr/employees?query=2026" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+            <div className="hr-alert-card tone-gold">
+              <span className="alert-icon"><FileWarning size={18} /></span>
+              <div className="alert-details">
+                <strong>{stats.expiringContracts} договоров</strong>
+                <small>Истекают в ближайшие 30 дней. Требуется продление.</small>
+              </div>
             </div>
-          </div>
-          <div className="hr-alert-card tone-coral">
-            <span className="alert-icon"><AlertCircle size={18} /></span>
-            <div className="alert-details">
-              <strong>{stats.overdueTasks} просрочено</strong>
-              <small>Задачи вышли за рамки планового SLA.</small>
+          </Link>
+          <Link to="/tasks?filter=overdue" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+            <div className="hr-alert-card tone-coral">
+              <span className="alert-icon"><AlertCircle size={18} /></span>
+              <div className="alert-details">
+                <strong>{stats.overdueTasks} просрочено</strong>
+                <small>Задачи вышли за рамки планового SLA.</small>
+              </div>
             </div>
-          </div>
-          <div className="hr-alert-card tone-teal">
-            <span className="alert-icon"><CheckSquare2 size={18} /></span>
-            <div className="alert-details">
-              <strong>{stats.activeProcesses} процессов</strong>
-              <small>Маршруты выполняются в штатном режиме.</small>
+          </Link>
+          <Link to="/processes" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+            <div className="hr-alert-card tone-teal">
+              <span className="alert-icon"><CheckSquare2 size={18} /></span>
+              <div className="alert-details">
+                <strong>{stats.activeProcesses} процессов</strong>
+                <small>Маршруты выполняются в штатном режиме.</small>
+              </div>
             </div>
-          </div>
+          </Link>
         </div>
       </Section>
       <Section title="Задачи" meta={`${activeTasks.length} активных`}><div className="task-compact-list">{activeTasks.slice(0, 4).map((task) => <Link to="/tasks" key={task.id}><span className={`priority-line priority-${task.priority}`} /><span><strong>{task.title}</strong><small>{task.process} · до {formatDate(task.dueDate, locale, 'dd MMM')}</small></span><ArrowRight size={15} /></Link>)}</div><Link className="panel-link" to="/tasks">Все задачи <ArrowRight size={15} /></Link></Section>
