@@ -103,7 +103,7 @@ export default function IncomingPage() {
   const hasActiveAdvanced = priorityFilter !== 'all' || confidentialityFilter !== 'all';
 
   return <>
-    <PageHeader eyebrow={isHr ? 'HR · Сообщения' : 'Секретариат · Реестр'} title={isHr ? 'Входящие сообщения' : 'Входящая корреспонденция'} actions={!isHr ? <Link className="primary-button" to="/correspondence/incoming/new"><Plus size={16} /> Зарегистрировать письмо</Link> : undefined} />
+    <PageHeader eyebrow={isHr ? 'HR · Входящие сообщения' : 'Секретариат · Реестр'} title={isHr ? 'Входящие сообщения' : 'Входящая корреспонденция'} actions={!isHr ? <Link className="primary-button" to="/correspondence/incoming/new"><Plus size={16} /> Зарегистрировать письмо</Link> : undefined} />
     
     <div className="message-tabs" role="tablist" aria-label="Категории сообщений">
       <button className={activeTab === 'external' ? 'active' : ''} onClick={() => setActiveTab('external')}>Внешние <b>{getCount('external')}</b></button>
