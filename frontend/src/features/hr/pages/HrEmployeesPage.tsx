@@ -52,6 +52,12 @@ export default function HrEmployeesPage() {
     </div>
 
     <div className="message-tabs" role="tablist" aria-label="Фильтр по департаментам">
+      <button
+        className={department === 'all' ? 'active' : ''}
+        onClick={() => setDepartment('all')}
+      >
+        Все <b>{result.data?.length ?? 0}</b>
+      </button>
       {departmentsList.map((dept) => {
         const isActive = department === dept.name;
         const count = (result.data ?? []).filter(emp => emp.department === dept.name).length;
