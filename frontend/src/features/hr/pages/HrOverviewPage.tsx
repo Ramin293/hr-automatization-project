@@ -51,26 +51,33 @@ export default function HrOverviewPage() {
     
     <div style={{ marginBottom: '14px' }}>
       <Section title="СОТРУДНИКИ И ОТСУТСТВИЯ" meta={`${stats.activeEmployees} активных`}>
-        <div className="hr-focus-list">
+        <div className="hr-focus-list-horizontal">
           <div>
             <b className="tone-teal">{stats.activeEmployees}</b>
             <span>
-              <strong>Сотрудники</strong>
-              <small>{stats.incompleteFiles} личных дел требуют внимания</small>
+              <strong>Активны</strong>
+              <small>В штате компании</small>
             </span>
           </div>
           <div>
             <b className="tone-gold">{stats.onLeave}</b>
             <span>
               <strong>В отпуске</strong>
-              <small>Текущие согласованные отсутствия</small>
+              <small>Текущие отсутствия</small>
+            </span>
+          </div>
+          <div>
+            <b className="tone-violet">{stats.onBusinessTrip}</b>
+            <span>
+              <strong>В командировке</strong>
+              <small>Служебные поездки</small>
             </span>
           </div>
           <div>
             <b className="tone-coral">{stats.onSickLeave}</b>
             <span>
               <strong>На больничном</strong>
-              <small>Без раскрытия медицинских деталей</small>
+              <small>Временная нетрудоспособность</small>
             </span>
           </div>
         </div>
