@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Bell, Blocks, Building2, CalendarDays, CheckSquare2, ChevronDown, Command, FileInput, Gauge, Menu, Moon, PanelLeftClose, PanelLeftOpen, Plus, Search, Settings2, Sun, UserPlus, UsersRound, X } from 'lucide-react';
+import { Bell, Blocks, Building2, CalendarDays, CheckSquare2, ChevronDown, FileInput, Gauge, Menu, Moon, PanelLeftClose, PanelLeftOpen, Plus, Search, Settings2, Sun, UserPlus, UsersRound, X } from 'lucide-react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { repositories } from '../repositories';
 import { hrRepository } from '../features/hr/api';
@@ -22,6 +22,7 @@ export function AppShell() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const notificationRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const currentPersona = getPersonaProfile(store.persona);
@@ -81,6 +82,18 @@ export function AppShell() {
   }, []);
 
   useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+        setNotificationsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
     if (searchOpen) window.setTimeout(() => searchInputRef.current?.focus(), 0);
   }, [searchOpen]);
 
@@ -126,14 +139,14 @@ export function AppShell() {
         <header className="topbar">
           <div className="topbar-inner">
             <div className="topbar-left"><button className="icon-button mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Открыть меню"><Menu size={20} /></button><div className="breadcrumbs"><span>{department.departmentCode}</span><b>/</b><strong>{department.pageTitle}</strong></div></div>
-            <button className="global-search" onClick={openSearch} aria-label="Глобальный поиск"><Search size={17} /><span>{t(store.locale, 'search')}</span><kbd><Command size={12} /> K</kbd></button>
-            <div className="topbar-actions"><button className="create-button" onClick={() => navigate(department.isHrWorkspace ? '/hr/hiring/add-employee' : '/correspondence/incoming/new')}><Plus size={17} />{t(store.locale, 'create')}</button><button className="icon-button theme-button" onClick={() => store.setTheme(store.theme === 'dark' ? 'light' : 'dark')} aria-label="Переключить тему">{store.theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}</button><div className="notification-wrap"><button className="icon-button notification-button" onClick={() => setNotificationsOpen(!notificationsOpen)} aria-label="Уведомления"><Bell size={18} /><i /></button>{notificationsOpen && <div className="popover notification-popover"><div className="popover-head"><strong>Уведомления</strong><span>3 новых</span></div><div className="notification-item"><i className="tone-coral" /><span><strong>Срок задачи истёк</strong><small>ВХ-2026-000839 · 24 мин назад</small></span></div><div className="notification-item"><i className="tone-gold" /><span><strong>Документ ожидает подписи</strong><small>Ответ по реестру имущества</small></span></div><div className="notification-item"><i className="tone-violet" /><span><strong>Новая задача соисполнителя</strong><small>Юридическое заключение</small></span></div></div>}</div></div>
+            <button className="global-search" onClick={openSearch} aria-label="Глобальный поиск"><Search size={17} /><span>{t(store.locale, 'search')}</span></button>
+            <div className="topbar-actions"><button className="create-button" onClick={() => navigate(department.isHrWorkspace ? '/hr/hiring/add-employee' : '/correspondence/incoming/new')}><Plus size={17} />{t(store.locale, 'create')}</button><button className="icon-button theme-button" onClick={() => store.setTheme(store.theme === 'dark' ? 'light' : 'dark')} aria-label="Переключить тему">{store.theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}</button><div className="notification-wrap" ref={notificationRef}><button className="icon-button notification-button" onClick={() => setNotificationsOpen(!notificationsOpen)} aria-label="Уведомления"><Bell size={18} /><i /></button>{notificationsOpen && <div className="popover notification-popover"><div className="popover-head"><strong>Уведомления</strong><span>3 новых</span></div><div className="notification-item"><i className="tone-coral" /><span><strong>Срок задачи истёк</strong><small>ВХ-2026-000839 · 24 мин назад</small></span></div><div className="notification-item"><i className="tone-gold" /><span><strong>Документ ожидает подписи</strong><small>Ответ по реестру имущества</small></span></div><div className="notification-item"><i className="tone-violet" /><span><strong>Новая задача соисполнителя</strong><small>Юридическое заключение</small></span></div></div>}</div></div>
           </div>
         </header>
         <main className="content"><Outlet /></main>
       </div>
 
-      {searchOpen && <div className="search-overlay" onMouseDown={() => setSearchOpen(false)}><section className="search-dialog" role="dialog" aria-modal="true" aria-label="Глобальный поиск" onMouseDown={(event) => event.stopPropagation()}><div className="search-input-wrap"><Search size={18} /><input ref={searchInputRef} value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Поиск документов, задач, сотрудников" /><kbd>Esc</kbd></div><div className="search-results">{searchResults.length ? searchResults.map((result) => <button key={result.id} onClick={() => selectSearchResult(result)}><span className={`search-result-icon ${result.type}`}>{result.type === 'document' ? <FileInput size={16} /> : result.type === 'employee' ? <UsersRound size={16} /> : result.type === 'task' ? <CheckSquare2 size={16} /> : <Gauge size={16} />}</span><span><strong>{result.title}</strong><small>{result.detail}</small></span></button>) : <p className="search-state">{searchData.isLoading ? 'Загрузка результатов...' : 'Ничего не найдено. Попробуйте изменить запрос.'}</p>}</div><footer><span>{searchQuery ? `${searchResults.length} результатов` : 'Начните вводить запрос или выберите раздел'}</span><kbd><Command size={11} /> K</kbd></footer></section></div>}
+      {searchOpen && <div className="search-overlay" onMouseDown={() => setSearchOpen(false)}><section className="search-dialog" role="dialog" aria-modal="true" aria-label="Глобальный поиск" onMouseDown={(event) => event.stopPropagation()}><div className="search-input-wrap"><Search size={18} /><input ref={searchInputRef} value={searchQuery} onChange={(event) => setSearchQuery(event.target.value)} placeholder="Поиск документов, задач, сотрудников" /></div><div className="search-results">{searchResults.length ? searchResults.map((result) => <button key={result.id} onClick={() => selectSearchResult(result)}><span className={`search-result-icon ${result.type}`}>{result.type === 'document' ? <FileInput size={16} /> : result.type === 'employee' ? <UsersRound size={16} /> : result.type === 'task' ? <CheckSquare2 size={16} /> : <Gauge size={16} />}</span><span><strong>{result.title}</strong><small>{result.detail}</small></span></button>) : <p className="search-state">{searchData.isLoading ? 'Загрузка результатов...' : 'Ничего не найдено. Попробуйте изменить запрос.'}</p>}</div><footer><span>{searchQuery ? `${searchResults.length} результатов` : 'Начните вводить запрос или выберите раздел'}</span></footer></section></div>}
 
       {store.developerOpen && <aside className="developer-panel" aria-label="Developer toolbar">
         <div className="developer-head"><span><i className="live-dot" /> Developer workspace</span><button className="icon-button" onClick={store.toggleDeveloper}><X size={18} /></button></div>
