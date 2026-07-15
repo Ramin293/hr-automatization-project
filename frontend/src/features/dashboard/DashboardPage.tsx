@@ -21,7 +21,7 @@ function OperationsDashboard() {
   if (snapshot.error || correspondence.error || tasks.error) return <QueryState error={(snapshot.error || correspondence.error || tasks.error) as Error} retry={() => { snapshot.refetch(); correspondence.refetch(); tasks.refetch(); }} />;
   const stats = snapshot.data!;
   return <>
-    <PageHeader eyebrow="Операционный день · 14 июля 2026" title="Центр управления" description="Единая картина корреспонденции, поручений и процессов на текущий момент." actions={<><button className="secondary-button"><Sparkles size={16} /> Сводка дня</button><Link className="primary-button" to="/correspondence/incoming/new"><FileInput size={16} /> Регистрация письма</Link></>} />
+    <PageHeader eyebrow="Операционный день · 14 июля 2026" title="Центр управления" actions={<><button className="secondary-button"><Sparkles size={16} /> Сводка дня</button><Link className="primary-button" to="/correspondence/incoming/new"><FileInput size={16} /> Регистрация письма</Link></>} />
     <div className="metric-grid">
       <article><span className="metric-icon tone-teal"><FileInput size={18} /></span><div><small>Поступило сегодня</small><strong>{stats.incomingToday}</strong><em>+2 за последний час</em></div></article>
       <article><span className="metric-icon tone-gold"><PenTool size={18} /></span><div><small>Ожидают резолюции</small><strong>{stats.awaitingResolution}</strong><em>3 срочных</em></div></article>

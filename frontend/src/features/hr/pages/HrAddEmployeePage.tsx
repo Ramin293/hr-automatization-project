@@ -1,4 +1,4 @@
-﻿import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { Download, Eye, FileText, LoaderCircle, Paperclip, RotateCcw, Save, Trash2, X } from 'lucide-react';
 import { useEffect, useState, type InputHTMLAttributes, type ReactNode } from 'react';
 import { useForm, type FieldErrors, type UseFormRegister } from 'react-hook-form';
@@ -80,7 +80,7 @@ export default function HrAddEmployeePage() {
   const section = (title: string, content: ReactNode) => <Section title={title}><div className="field-grid hr-add-employee-fields">{content}</div></Section>;
 
   return <>
-    <PageHeader eyebrow="HR · Добавить сотрудника" title="Служебная записка на приём" description="Заполните данные будущего сотрудника и сформируйте официальный DOCX для руководства." />
+    <PageHeader eyebrow="HR · Добавить сотрудника" title="Служебная записка на приём" />
     <div className="hr-local-only-banner"><FileText size={18} /><span><strong>Локальный режим</strong><small>Черновик хранится на устройстве, вложения — только в памяти, DOCX создаётся в браузере.</small></span></div>
     {notice && <div className="hr-form-notice" role="status">{notice}<button onClick={() => setNotice('')} aria-label="Закрыть уведомление"><X size={14} /></button></div>}
     {generationError && <div className="hr-generation-error" role="alert">{generationError}</div>}

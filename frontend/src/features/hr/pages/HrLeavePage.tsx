@@ -39,7 +39,7 @@ export default function HrLeavePage() {
   const visibleRequests = isHr ? requests.data! : requests.data!.filter((item) => item.employeeId === 'e-3');
 
   return <>
-    <PageHeader eyebrow={isHr ? 'HR · Absence management' : 'HR · Self service'} title={isHr ? 'Управление отпусками' : 'Мои отпуска'} description={isHr ? 'Проверка заявок, балансов и workflow-статусов сотрудников.' : 'Баланс, история и новая заявка на отпуск.'} />
+    <PageHeader eyebrow={isHr ? 'HR · Absence management' : 'HR · Self service'} title={isHr ? 'Управление отпусками' : 'Мои отпуска'} />
     {successNumber && <div className="success-banner"><CheckCircle2 size={20} /><span><strong>Заявка создана</strong>Документ {successNumber} зарегистрирован, процесс Leave Request v2 запущен.</span><button className="icon-button" onClick={() => setSuccessNumber(null)}><X size={16} /></button></div>}
     {isHr ? <>
       <div className="hr-leave-summary"><article><span>На проверке HR</span><strong>{visibleRequests.filter((item) => item.status === 'hr_review').length}</strong><small>Нужны действия</small></article><article><span>У руководителей</span><strong>{visibleRequests.filter((item) => item.status === 'pending_manager').length}</strong><small>Ожидают решения</small></article><article><span>Одобрено в июле</span><strong>18</strong><small>142 календарных дня</small></article><article><span>Конфликты графика</span><strong className="text-coral">2</strong><small>Требуют согласования</small></article></div>

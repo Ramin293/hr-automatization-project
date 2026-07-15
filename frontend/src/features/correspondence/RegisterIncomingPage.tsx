@@ -22,7 +22,7 @@ export default function RegisterIncomingPage() {
   const checkDuplicate = async () => { const values = getValues(); const found = await repositories.correspondence.checkDuplicate(values.sender, values.senderNumber); setDuplicate(found ? found.number : 'clear'); };
 
   return <form onSubmit={handleSubmit((data) => mutation.mutate(data))}>
-    <PageHeader eyebrow="Секретариат · Новая запись" title="Регистрация входящего письма" description="Заполните регистрационные данные. Официальный номер будет запрошен у mock Registry Service." actions={<><Link className="secondary-button" to="/correspondence/incoming"><ArrowLeft size={16} /> К реестру</Link><button type="button" className="secondary-button"><Save size={16} /> Черновик</button><button className="primary-button" disabled={!isValid || mutation.isPending}><FileCheck2 size={16} /> {mutation.isPending ? 'Регистрация…' : 'Зарегистрировать'}</button></>} />
+    <PageHeader eyebrow="Секретариат · Новая запись" title="Регистрация входящего письма" actions={<><Link className="secondary-button" to="/correspondence/incoming"><ArrowLeft size={16} /> К реестру</Link><button type="button" className="secondary-button"><Save size={16} /> Черновик</button><button className="primary-button" disabled={!isValid || mutation.isPending}><FileCheck2 size={16} /> {mutation.isPending ? 'Регистрация…' : 'Зарегистрировать'}</button></>} />
     <div className="form-progress"><span className="active"><i>1</i>Регистрационные данные</span><b /><span><i>2</i>Документы</span><b /><span><i>3</i>Проверка</span></div>
     <div className="form-layout">
       <div className="form-main">

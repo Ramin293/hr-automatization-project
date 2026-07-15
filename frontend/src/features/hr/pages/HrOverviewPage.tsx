@@ -30,7 +30,7 @@ export default function HrOverviewPage() {
     const person = employee.data!;
     const ownRequests = leaveRequests.data!.filter((item) => item.employeeId === person.id);
     return <>
-      <PageHeader eyebrow="HR · Сотрудник" title={`Здравствуйте, ${person.fullName.split(' ')[0]}`} description="Личные кадровые данные, заявки и ближайшие события в одном месте." actions={<Link className="primary-button" to="/hr/leave"><CalendarCheck2 size={16} /> Новая заявка</Link>} />
+      <PageHeader eyebrow="HR · Сотрудник" title={`Здравствуйте, ${person.fullName.split(' ')[0]}`} actions={<Link className="primary-button" to="/hr/leave"><CalendarCheck2 size={16} /> Новая заявка</Link>} />
       <div className="hr-employee-hero">
         <div className="hr-person"><span className="avatar hr-avatar-xl">{person.initials}</span><div><strong>{person.fullName}</strong><span>{person.position} · {person.department}</span><small>{person.employeeNumber}</small></div></div>
         <div className="hr-balance"><span>Доступный отпуск</span><strong>{person.leaveBalance}<small>дней</small></strong><i><b style={{ width: `${Math.min(100, person.leaveBalance / 28 * 100)}%` }} /></i></div>
