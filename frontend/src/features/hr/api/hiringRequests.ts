@@ -25,16 +25,30 @@ function payload(values: AddEmployeeFormValues) {
       iin: values.iin, birthDate: values.birthDate, gender: values.gender, citizenship: values.citizenship,
       maritalStatus: values.maritalStatus, personalPhone: values.personalPhone, personalEmail: values.personalEmail,
       address: values.address, identityDocumentType: values.identityDocumentType,
-      identityDocumentNumber: values.identityDocumentNumber
+      identityDocumentNumber: values.identityDocumentNumber, identityIssueDate: values.identityIssueDate,
+      identityExpirationDate: values.identityExpirationDate, issuingAuthority: values.issuingAuthority,
+      emergencyContact: values.emergencyContact, emergencyPhone: values.emergencyPhone
     },
     employment: {
       department: values.department, position: values.position, employmentType: values.employmentType,
       workArrangement: values.workArrangement, workplace: values.workplace, startDate: values.startDate,
-      probationMonths: values.probationMonths, schedule: values.schedule, hiringReason: values.hiringReason
+      probationMonths: values.probationMonths, schedule: values.schedule, hiringReason: values.hiringReason,
+      team: values.team, manager: values.manager, fte: values.fte, salary: values.salary,
+      currency: values.currency, responsibilities: values.responsibilities, justification: values.justification,
+      recipient: values.recipient, recipientPosition: values.recipientPosition,
+      recipientDepartment: values.recipientDepartment, recipientType: values.recipientType,
+      requestDate: values.requestDate, initiatorName: values.initiatorName,
+      initiatorPosition: values.initiatorPosition, initiatorDepartment: values.initiatorDepartment,
+      initiatorEmail: values.initiatorEmail, initiatorPhone: values.initiatorPhone,
+      requestText: values.requestText
     },
     education: {
       educationLevel: values.educationLevel, institution: values.institution,
-      specialization: values.specialization, totalExperience: values.totalExperience
+      specialization: values.specialization, totalExperience: values.totalExperience,
+      graduationYear: values.graduationYear, qualification: values.qualification,
+      relevantExperience: values.relevantExperience, skills: values.skills,
+      languages: values.languages, certifications: values.certifications,
+      additionalInfo: values.additionalInfo
     }
   };
 }

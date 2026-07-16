@@ -12,6 +12,7 @@ import {
   Paperclip,
   RotateCcw,
   Save,
+  Send,
   Trash2,
   UserRound,
   X
@@ -116,6 +117,7 @@ export default function HrAddEmployeePage({ onBack }: { onBack?: () => void }) {
   const [requestId, setRequestId] = useState<string | null>(null);
   const [requestRevision, setRequestRevision] = useState(1);
   const [pdfVersionId, setPdfVersionId] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
   const [busy, setBusy] = useState(false);
   const { register, formState: { errors, isDirty }, getValues, handleSubmit, reset, trigger, watch } = form;
   const values = watch();
@@ -143,11 +145,11 @@ export default function HrAddEmployeePage({ onBack }: { onBack?: () => void }) {
 
   if (!canOpen) return <div className="hr-access-denied"><span>HR</span><h1>Доступ ограничен</h1><p>Форма найма доступна только HR-роли.</p><Link className="secondary-button" to="/">На главную</Link></div>;
 
-  const saveDraft = async () => {
+  const saveDraft = async (manageBusy = true) => {
     const draftValues = getValues();
     const draft = saveEmployeeDraft(localStorage, draftValues);
     setNotice(`Локальный черновик сохранён · ${new Date(draft.savedAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}. Файлы не сохраняются локально.`);
-    setBusy(true);
+    if (manageBusy) setBusy(true);
     try {
       const saved = requestId ? await hiringRequestsApi.update(requestId, requestRevision, draftValues) : await hiringRequestsApi.create(draftValues);
       setRequestId(saved.id); setRequestRevision(saved.revision); reset(draftValues);
@@ -156,7 +158,7 @@ export default function HrAddEmployeePage({ onBack }: { onBack?: () => void }) {
     } catch (error) {
       setNotice(`Не удалось сохранить черновик: ${error instanceof Error ? error.message : 'ошибка API'}`);
       return undefined;
-    } finally { setBusy(false); }
+    } finally { if (manageBusy) setBusy(false); }
   };
 
   const clearForm = () => {
@@ -167,7 +169,7 @@ export default function HrAddEmployeePage({ onBack }: { onBack?: () => void }) {
     setActiveStep(0);
     setHighestStep(0);
     setConfirmClear(false);
-    setRequestId(null); setRequestRevision(1); setPdfVersionId(null);
+    setRequestId(null); setRequestRevision(1); setPdfVersionId(null); setSubmitted(false);
     setNotice('Форма и локальный черновик очищены');
   };
 
@@ -209,7 +211,16 @@ export default function HrAddEmployeePage({ onBack }: { onBack?: () => void }) {
     }
     setAttachmentError(''); setBusy(true);
     try {
-      const saved = await saveDraft();
+      if (requestId && pdfVersionId) {
+        const sent = await hiringRequestsApi.submit(requestId, requestRevision);
+        setRequestRevision(sent.revision);
+        setSubmitted(true);
+        clearEmployeeDraft(localStorage);
+        reset(getValues());
+        setNotice(`Заявление ${sent.requestNumber} отправлено. Текущий этап: ${sent.currentStageName}.`);
+        return;
+      }
+      const saved = await saveDraft(false);
       if (!saved) return;
       for (const attachment of attachments) {
         await hiringRequestsApi.upload(saved.id, attachment.category === 'Удостоверение личности' ? 'identity' : 'diploma', attachment.file);
@@ -218,28 +229,20 @@ export default function HrAddEmployeePage({ onBack }: { onBack?: () => void }) {
       await hiringRequestsApi.generatePdf(saved.id, withFiles.revision);
       const generated = await hiringRequestsApi.get(saved.id);
       setRequestRevision(generated.revision); setPdfVersionId(generated.pdfVersionId ?? null);
-      setNotice(`PDF сформирован и сохранён как версия документа заявки ${generated.requestNumber}.`);
+      const sent = await hiringRequestsApi.submit(saved.id, generated.revision);
+      setRequestRevision(sent.revision);
+      setSubmitted(true);
+      clearEmployeeDraft(localStorage);
+      reset(getValues());
+      setNotice(`Заявление ${sent.requestNumber} сформировано в PDF и отправлено. Текущий этап: ${sent.currentStageName}.`);
     } catch (error) {
-      setNotice(`Не удалось сформировать PDF: ${error instanceof Error ? error.message : 'ошибка API'}`);
+      setNotice(`Не удалось отправить заявление: ${error instanceof Error ? error.message : 'ошибка API'}`);
     } finally { setBusy(false); }
   }, (invalidErrors) => {
     const invalidStep = registrationSteps.findIndex((step) => step.fields.some((field) => invalidErrors[field]));
     setActiveStep(invalidStep >= 0 ? invalidStep : 0);
     setNotice('Проверьте обязательные поля отмеченного этапа.');
   });
-
-  const submitForApproval = async () => {
-    if (!requestId || !pdfVersionId) return;
-    setBusy(true);
-    try {
-      const submitted = await hiringRequestsApi.submit(requestId, requestRevision);
-      setRequestRevision(submitted.revision);
-      clearEmployeeDraft(localStorage);
-      setNotice(`Заявка ${submitted.requestNumber} отправлена на согласование. Текущий этап: ${submitted.currentStageName}.`);
-    } catch (error) {
-      setNotice(`Отправка не выполнена: ${error instanceof Error ? error.message : 'ошибка API'}`);
-    } finally { setBusy(false); }
-  };
 
   const documentUpload = (category: AttachmentCategory, title: string, description: string, required: boolean) => {
     const files = attachments.filter((item) => item.category === category);
@@ -347,26 +350,15 @@ export default function HrAddEmployeePage({ onBack }: { onBack?: () => void }) {
               {documentUpload('Диплом', 'Диплом об образовании', diplomaRequired ? 'Обязателен для выбранного уровня образования' : 'Не требуется для среднего общего образования', diplomaRequired)}
             </div>
             {attachmentError && <div className="hr-attachment-error" role="alert">{attachmentError}</div>}
-            <aside className="hr-registration-review">
-              <header><span><CheckCircle2 size={18} /></span><div><strong>Проверьте перед завершением</strong><small>Краткая сводка по заполненной карточке</small></div></header>
-              <dl>
-                <div><dt>Кандидат</dt><dd>{candidateName}</dd></div>
-                <div><dt>ИИН</dt><dd>{values.iin || 'Не указан'}</dd></div>
-                <div><dt>Должность</dt><dd>{values.position || 'Не выбрана'}</dd></div>
-                <div><dt>Департамент</dt><dd>{values.department || 'Не выбран'}</dd></div>
-                <div><dt>Дата выхода</dt><dd>{values.startDate || 'Не указана'}</dd></div>
-                <div><dt>Документы</dt><dd>{attachments.length ? `${attachments.length} файл(а)` : 'Не загружены'}</dd></div>
-              </dl>
-            </aside>
           </div>}
         </div>
 
         <footer className="hr-registration-actions">
           <div className="hr-registration-save-state"><i className={isDirty ? 'dirty' : ''} /><span>{isDirty ? 'Есть несохранённые изменения' : 'Черновик сохранён'}<small>Можно вернуться к заполнению позже</small></span></div>
-          <div className="hr-registration-secondary-actions"><button type="button" className="text-button" onClick={() => setConfirmClear(true)} disabled={busy}><RotateCcw size={15} />Очистить</button><button type="button" className="secondary-button" aria-label="Сохранить" onClick={() => void saveDraft()} disabled={busy}>{busy ? <Loader2 className="spin" size={16} /> : <Save size={16} />}Сохранить черновик</button>{pdfVersionId && requestId && <a className="secondary-button" href={hiringRequestsApi.downloadUrl(requestId, pdfVersionId, true)} target="_blank" rel="noreferrer"><FileText size={16} />PDF</a>}</div>
+          <div className="hr-registration-secondary-actions"><button type="button" className="text-button" onClick={() => setConfirmClear(true)} disabled={busy}><RotateCcw size={15} />Очистить</button><button type="button" className="secondary-button" aria-label="Сохранить" onClick={() => void saveDraft()} disabled={busy || submitted}>{busy ? <Loader2 className="spin" size={16} /> : <Save size={16} />}Сохранить черновик</button>{pdfVersionId && requestId && <a className="secondary-button" href={hiringRequestsApi.downloadUrl(requestId, pdfVersionId, true)} target="_blank" rel="noreferrer"><FileText size={16} />PDF</a>}</div>
           <div className="hr-registration-navigation">
             {activeStep > 0 && <button type="button" className="secondary-button" onClick={() => { setActiveStep((step) => step - 1); scrollToWizard(); }}><ChevronLeft size={17} />Назад</button>}
-            {activeStep < 3 ? <button type="button" className="primary-button" onClick={goNext}>Продолжить<ArrowRight size={17} /></button> : <>{pdfVersionId ? <button type="button" className="primary-button" onClick={() => void submitForApproval()} disabled={busy}>{busy ? <Loader2 className="spin" size={17} /> : <CheckCircle2 size={17} />}Отправить на согласование</button> : <button type="submit" className="primary-button" disabled={busy}>{busy ? <Loader2 className="spin" size={17} /> : <FileText size={17} />}Сформировать PDF</button>}</>}
+            {activeStep < 3 ? <button type="button" className="primary-button" onClick={goNext}>Продолжить<ArrowRight size={17} /></button> : <button type="submit" className="primary-button" disabled={busy || submitted}>{busy ? <Loader2 className="spin" size={17} /> : <Send size={17} />}{submitted ? 'Заявление отправлено' : 'Отправить заявление'}</button>}
           </div>
         </footer>
       </section>

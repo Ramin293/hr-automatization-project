@@ -839,18 +839,6 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
 .hr-document-upload li small { color: var(--muted); font-size: 7px; margin-top: 3px; }
 .hr-document-upload li button { color: var(--coral); flex: 0 0 auto; }
 .hr-attachment-error { background: color-mix(in srgb, var(--coral) 8%, var(--paper)); border: 1px solid color-mix(in srgb, var(--coral) 30%, var(--border)); border-radius: 8px; color: var(--coral); font-size: 8px; padding: 11px 13px; }
-.hr-registration-review { background: linear-gradient(135deg, color-mix(in srgb, var(--teal) 6%, var(--canvas)), var(--canvas)); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-.hr-registration-review > header { align-items: center; border-bottom: 1px solid var(--border); display: flex; gap: 10px; padding: 13px 15px; }
-.hr-registration-review > header > span { align-items: center; background: color-mix(in srgb, var(--emerald) 12%, var(--paper)); border-radius: 8px; color: var(--emerald); display: flex; height: 34px; justify-content: center; width: 34px; }
-.hr-registration-review > header > div { display: flex; flex-direction: column; }
-.hr-registration-review > header strong { font-size: 9px; }
-.hr-registration-review > header small { color: var(--muted); font-size: 7px; margin-top: 3px; }
-.hr-registration-review dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; }
-.hr-registration-review dl div { border-right: 1px solid var(--border); border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; min-width: 0; padding: 12px 15px; }
-.hr-registration-review dl div:nth-child(-n+3) { border-top: 0; }
-.hr-registration-review dl div:nth-child(3n) { border-right: 0; }
-.hr-registration-review dt { color: var(--muted); font-size: 7px; }
-.hr-registration-review dd { font-size: 8px; font-weight: 600; margin: 0; overflow-wrap: anywhere; }
 .hr-registration-actions { align-items: center; background: color-mix(in srgb, var(--canvas) 70%, var(--paper)); border-top: 1px solid var(--border); display: grid; gap: 12px; grid-template-columns: minmax(170px, 1fr) auto auto; padding: 13px 16px; position: sticky; bottom: 0; z-index: 5; }
 .hr-registration-save-state { align-items: center; display: flex; gap: 8px; min-width: 0; }
 .hr-registration-save-state > i { background: var(--emerald); border-radius: 50%; box-shadow: 0 0 0 4px color-mix(in srgb, var(--emerald) 10%, transparent); flex: 0 0 auto; height: 7px; width: 7px; }
@@ -984,11 +972,6 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
   .hr-employee-hero { grid-template-columns: 1fr 1fr; }
   .hr-add-employee-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hr-document-grid { grid-template-columns: 1fr; }
-  .hr-registration-review dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .hr-registration-review dl div, .hr-registration-review dl div:nth-child(-n+3) { border-top: 1px solid var(--border); }
-  .hr-registration-review dl div:nth-child(-n+2) { border-top: 0; }
-  .hr-registration-review dl div:nth-child(3n) { border-right: 1px solid var(--border); }
-  .hr-registration-review dl div:nth-child(2n) { border-right: 0; }
   .hr-registration-actions { grid-template-columns: minmax(160px, 1fr) auto; }
   .hr-registration-secondary-actions { justify-content: flex-end; }
   .hr-registration-navigation { grid-column: 1 / -1; justify-content: flex-end; }
@@ -1029,9 +1012,6 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
   .hr-add-employee-fields { grid-template-columns: 1fr; }
   .hr-add-employee-fields .span-two { grid-column: auto; }
   .hr-education-fields { grid-template-columns: 1fr; }
-  .hr-registration-review dl { grid-template-columns: 1fr; }
-  .hr-registration-review dl div, .hr-registration-review dl div:nth-child(-n+2), .hr-registration-review dl div:nth-child(2n), .hr-registration-review dl div:nth-child(3n) { border-right: 0; border-top: 1px solid var(--border); }
-  .hr-registration-review dl div:first-child { border-top: 0; }
   .hr-registration-actions { align-items: stretch; grid-template-columns: 1fr; padding: 12px; position: static; }
   .hr-registration-secondary-actions, .hr-registration-navigation { grid-column: auto; justify-content: stretch; }
   .hr-registration-secondary-actions > *, .hr-registration-navigation > * { flex: 1; justify-content: center; }
