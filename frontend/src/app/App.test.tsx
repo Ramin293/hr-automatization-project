@@ -84,8 +84,8 @@ describe('application runtime', () => {
     useDeveloperStore.setState({ persona: 'hr-specialist' });
     renderRoute('/hr/hiring/add-employee');
 
-    expect(await screen.findByRole('heading', { name: 'Найм сотрудника' })).toBeTruthy();
-    expect(screen.getByText('Добавить сотрудника', { selector: '.breadcrumbs strong' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { name: 'Добавление сотрудника' })).toBeTruthy();
+    expect(screen.getByText('Добавление сотрудника', { selector: '.breadcrumbs strong' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: /Сохранить черновик/i }));
     expect(localStorage.getItem('ertis.hr.add-employee.draft.v1')).toContain('Зарина Ахметова');
     expect(screen.getByText(/Файлы не сохраняются/i)).toBeTruthy();

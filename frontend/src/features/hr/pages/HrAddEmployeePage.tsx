@@ -126,7 +126,7 @@ export default function HrAddEmployeePage({ onBack }: { onBack?: () => void }) {
   };
 
   return <>
-    <PageHeader eyebrow="HR · Найм" title="Найм сотрудника" description="Заполните данные кандидата и условия предлагаемой занятости." actions={onBack ? <button type="button" className="secondary-button" onClick={onBack}><ArrowLeft size={16} /> Назад к списку</button> : undefined} />
+    <PageHeader eyebrow="HR · Добавление сотрудника" title="Добавление сотрудника" actions={onBack ? <button type="button" className="secondary-button" onClick={onBack}><ArrowLeft size={16} /> Назад к списку</button> : undefined} />
     <div className="hr-hiring-intro"><Info size={18} /><span><strong>PDF-заявление</strong><small>После заполнения формы здесь будет автоматически создаваться заявление на рассмотрение. На текущем этапе доступен только фронтенд формы.</small></span></div>
     {notice && <div className="hr-form-notice" role="status"><span><CheckCircle2 size={15} />{notice}</span><button type="button" onClick={() => setNotice('')} aria-label="Закрыть уведомление"><X size={14} /></button></div>}
     <form className="hr-add-employee-form" onSubmit={complete}>

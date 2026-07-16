@@ -27,7 +27,7 @@ export function DepartmentProvider({ children }: PropsWithChildren) {
     const isHrWorkspace = profile.departmentCode === 'HR';
     const isAddEmployee = pathname.endsWith('/employees') && new URLSearchParams(search).get('add') === 'true';
     const pageTitle = isAddEmployee
-      ? 'Добавить сотрудника'
+      ? 'Добавление сотрудника'
       : isHrRoute
       ? hrPages.find(([pattern]) => pattern.test(pathname))?.[1] ?? 'Главная'
       : pathname.includes('incoming') ? (isHrWorkspace ? 'Входящие сообщения' : 'Входящая корреспонденция')
