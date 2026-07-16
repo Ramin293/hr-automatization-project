@@ -53,6 +53,8 @@ describe('application runtime', () => {
     expect(screen.getAllByRole('link', { name: /Входящие сообщения/i }).length).toBeGreaterThan(0);
     expect(screen.getAllByRole('link', { name: /^Сотрудники$/i }).length).toBeGreaterThan(0);
     expect(screen.getAllByRole('link', { name: /^Процессы/i }).length).toBeGreaterThan(0);
+    expect(screen.getByRole('img', { name: 'Распределение сотрудников по типу присутствия' })).toBeTruthy();
+    expect(screen.getByRole('img', { name: 'HR-показатели, требующие контроля' })).toBeTruthy();
     expect(screen.queryByText(/Операционный день|Сводка дня|HR пространство/i)).toBeNull();
   });
 

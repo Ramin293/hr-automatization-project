@@ -3,6 +3,7 @@ import { AlertCircle, ArrowRight, CalendarCheck2, CheckSquare2, FileWarning, Gra
 import { Link } from 'react-router-dom';
 import { repositories } from '../../../repositories';
 import { PageHeader, QueryState, Section } from '../../../shared/components';
+import { BarChart, DonutChart } from '../../../shared/charts';
 import { formatDate, statusLabels } from '../../../shared/format';
 import { usePermission } from '../../../shared/permissions';
 import { useDeveloperStore } from '../../../shared/store';
@@ -45,6 +46,20 @@ export default function HrOverviewPage() {
   const stats = overview.data!;
   const pending = leaveRequests.data!.filter((item) => item.status === 'hr_review');
   const activeTasks = tasks.data!.filter((task) => task.state !== 'completed');
+  const workforceTotal = Math.max(1, stats.activeEmployees + stats.onLeave + stats.onBusinessTrip + stats.onSickLeave);
+  const presenceRate = Math.round(stats.activeEmployees / workforceTotal * 100);
+  const workforceChart = [
+    { label: 'Активны', value: stats.activeEmployees, color: 'var(--teal)', detail: 'На рабочем месте' },
+    { label: 'В отпуске', value: stats.onLeave, color: 'var(--gold)', detail: 'Плановое отсутствие' },
+    { label: 'Командировка', value: stats.onBusinessTrip, color: 'var(--violet)', detail: 'Служебная поездка' },
+    { label: 'Больничный', value: stats.onSickLeave, color: 'var(--coral)', detail: 'Нетрудоспособность' },
+  ];
+  const controlChart = [
+    { label: 'Процессы', value: stats.activeProcesses, color: 'var(--teal)' },
+    { label: 'Дела < 90%', value: stats.incompleteFiles, color: 'var(--gold)' },
+    { label: 'Договоры', value: stats.expiringContracts, color: 'var(--violet)' },
+    { label: 'Просрочено', value: stats.overdueTasks, color: 'var(--coral)' },
+  ];
 
   return <>
     <PageHeader eyebrow="HR · Главная" title="Рабочее пространство" actions={<><Link className="secondary-button" to="/hr/employees"><UsersRound size={16} /> Сотрудники</Link><Link className="primary-button" to="/hr/employees?add=true"><UserPlus size={16} /> Добавить сотрудника</Link></>} />
@@ -83,6 +98,11 @@ export default function HrOverviewPage() {
         </div>
         <Link className="panel-link-compact" to="/hr/employees">Открыть сотрудников <ArrowRight size={15} /></Link>
       </Section>
+    </div>
+
+    <div className="dashboard-chart-grid hr-dashboard-charts">
+      <Section title="Структура присутствия" meta={`${workforceTotal} сотрудников`}><DonutChart data={workforceChart} centerValue={`${presenceRate}%`} centerLabel="активны" ariaLabel="Распределение сотрудников по типу присутствия" /></Section>
+      <Section title="HR-контроль" meta="Актуальные риски"><BarChart data={controlChart} ariaLabel="HR-показатели, требующие контроля" /></Section>
     </div>
 
     <div className="hr-overview-row-split">
