@@ -31,16 +31,16 @@ instances started under older published definitions are not moved to a newer def
 
 Verified on a dedicated PostgreSQL 17 database (`spk_hr_test`):
 
-- complete backend suite: `127 passed`, `0 failed`, `0 skipped`, `1` non-blocking Starlette
+- complete backend suite: `138 passed`, `0 failed`, `0 skipped`, `1` non-blocking Starlette
   deprecation warning;
 - PostgreSQL integration suite: `17 passed`;
 - Ruff lint: passed;
-- Ruff formatting for configured source/test scope: passed (`226 files already formatted`);
+- Ruff formatting for configured source/test scope: passed (`227 files already formatted`);
 - mypy: passed (`190 source files`);
 - clean Alembic upgrade to `0005_absence`: passed;
 - Alembic metadata drift check: `No new upgrade operations detected`;
 - idempotent seed: passed twice;
-- OpenAPI contract: `134 paths`, with no contract failures.
+- OpenAPI contract: `136 paths`, with no contract failures.
 
 The frontend was not changed.
 
@@ -55,3 +55,13 @@ Leave uses manager and HR workflow stages. Business trips use manager, finance a
 stages. Both support return to the exact prior stage, resubmission, rejection, cancellation,
 idempotent decisions, optimistic concurrency and actor/scope resolution through existing RBAC.
 Alembic head is `0005_absence`.
+
+The employee workspace's `employee_absences` table is the calendar/read projection, while
+`leave_requests` and `business_trip_requests` remain the approval aggregates. Final leave approval
+or trip registration creates that projection in the same transaction; cancellation updates it.
+`source_type` plus `source_id` makes projection creation idempotent. The `0005_absence` migration
+also merges the formerly competing `0004_module2` and `0004_employee_absences` Alembic branches,
+leaving exactly one head.
+
+Frontend verification for the employee-absence UI already present on `main`: ESLint passed,
+TypeScript passed, `22` tests passed, and the production Vite build passed.

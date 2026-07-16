@@ -506,18 +506,53 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
 .hr-form-notice > span { align-items: center; display: flex; gap: 7px; }
 .hr-form-notice button { background: transparent; border: 0; color: var(--muted); }
 .hr-generation-error { background: color-mix(in srgb, var(--coral) 8%, var(--paper)); border: 1px solid color-mix(in srgb, var(--coral) 35%, var(--border)); color: var(--coral); font-size: 8px; margin-bottom: 10px; padding: 10px 12px; }
-.hr-add-employee-form { display: grid; gap: 14px; }
+.hr-registration-hero { align-items: center; background: linear-gradient(135deg, color-mix(in srgb, var(--teal) 14%, var(--paper)), color-mix(in srgb, var(--violet) 8%, var(--paper)) 55%, var(--paper)); border: 1px solid color-mix(in srgb, var(--teal) 22%, var(--border)); border-radius: 16px; display: grid; gap: 28px; grid-template-columns: minmax(0, 1fr) minmax(220px, 300px); margin-bottom: 14px; overflow: hidden; padding: 22px 24px; position: relative; }
+.hr-registration-hero::after { background: radial-gradient(circle, color-mix(in srgb, var(--violet) 22%, transparent), transparent 68%); content: ''; height: 220px; pointer-events: none; position: absolute; right: -70px; top: -110px; width: 220px; }
+.hr-registration-hero-copy { min-width: 0; position: relative; z-index: 1; }
+.hr-registration-kicker { color: var(--teal); font-family: var(--font-mono); font-size: 7px; font-weight: 500; letter-spacing: .12em; }
+.hr-registration-hero h2 { font-family: var(--font-condensed); font-size: clamp(22px, 2.4vw, 34px); line-height: 1.05; margin: 9px 0 8px; overflow-wrap: anywhere; }
+.hr-registration-hero p { color: var(--muted); font-size: 9px; line-height: 1.55; margin: 0; max-width: 650px; }
+.hr-registration-progress { background: color-mix(in srgb, var(--paper) 82%, transparent); border: 1px solid color-mix(in srgb, var(--teal) 18%, var(--border)); border-radius: 12px; display: grid; gap: 12px; padding: 15px; position: relative; z-index: 1; }
+.hr-registration-progress > div { align-items: flex-end; display: flex; justify-content: space-between; }
+.hr-registration-progress strong { font-family: var(--font-condensed); font-size: 24px; font-weight: 600; line-height: 1; }
+.hr-registration-progress small { color: var(--muted); font-size: 8px; }
+.hr-registration-progress > span { background: color-mix(in srgb, var(--teal) 12%, var(--soft)); border-radius: 20px; display: block; height: 7px; overflow: hidden; }
+.hr-registration-progress > span i { background: linear-gradient(90deg, var(--teal), var(--violet)); border-radius: inherit; display: block; height: 100%; transition: width .3s ease; }
+.hr-registration-wizard { display: grid; gap: 14px; min-width: 0; scroll-margin-top: 90px; }
+.hr-registration-timeline { background: var(--paper); border: 1px solid var(--border); border-radius: 14px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); list-style: none; margin: 0; overflow: hidden; padding: 16px; }
+.hr-registration-timeline li { min-width: 0; position: relative; }
+.hr-registration-timeline li::after { background: var(--border); content: ''; height: 2px; left: calc(50% + 20px); position: absolute; right: calc(-50% + 20px); top: 19px; z-index: 0; }
+.hr-registration-timeline li.done::after { background: linear-gradient(90deg, var(--emerald), var(--teal)); }
+.hr-registration-timeline li:last-child::after { display: none; }
+.hr-registration-timeline button { align-items: center; background: transparent; border: 0; display: flex; flex-direction: column; gap: 8px; min-width: 0; padding: 0 8px; position: relative; text-align: center; width: 100%; z-index: 1; }
+.hr-registration-timeline button:disabled { cursor: default; opacity: 1; }
+.hr-registration-timeline button > span { align-items: center; background: var(--paper); border: 2px solid var(--border); border-radius: 50%; color: var(--muted); display: flex; flex: 0 0 auto; font-family: var(--font-mono); font-size: 9px; height: 40px; justify-content: center; transition: .2s ease; width: 40px; }
+.hr-registration-timeline .active button > span { background: linear-gradient(135deg, var(--teal), var(--violet)); border-color: transparent; box-shadow: 0 7px 18px color-mix(in srgb, var(--teal) 28%, transparent); color: white; transform: scale(1.05); }
+.hr-registration-timeline .done button > span { background: var(--emerald); border-color: var(--emerald); color: white; }
+.hr-registration-timeline button > div { display: flex; flex-direction: column; min-width: 0; }
+.hr-registration-timeline strong { font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hr-registration-timeline small { color: var(--muted); font-size: 7px; margin-top: 3px; }
+.hr-registration-timeline .active small { color: var(--teal); font-weight: 500; }
+.hr-registration-timeline .done small { color: var(--emerald); }
+.hr-registration-stage { background: var(--paper); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 16px 38px color-mix(in srgb, var(--void) 7%, transparent); min-width: 0; overflow: hidden; }
+.hr-registration-stage > header { align-items: center; background: linear-gradient(90deg, color-mix(in srgb, var(--teal) 8%, var(--paper)), var(--paper)); border-bottom: 1px solid var(--border); display: grid; gap: 13px; grid-template-columns: 44px minmax(0, 1fr) auto; padding: 18px 20px; }
+.hr-registration-stage-icon { align-items: center; background: linear-gradient(135deg, color-mix(in srgb, var(--teal) 18%, var(--paper)), color-mix(in srgb, var(--violet) 14%, var(--paper))); border: 1px solid color-mix(in srgb, var(--teal) 24%, var(--border)); border-radius: 11px; color: var(--teal); display: flex; height: 44px; justify-content: center; width: 44px; }
+.hr-registration-stage > header > div { min-width: 0; }
+.hr-registration-stage > header small { color: var(--teal); font-family: var(--font-mono); font-size: 7px; letter-spacing: .08em; }
+.hr-registration-stage > header h2 { font-family: var(--font-condensed); font-size: 17px; margin: 3px 0 2px; }
+.hr-registration-stage > header p { color: var(--muted); font-size: 8px; line-height: 1.4; margin: 0; }
+.hr-registration-stage > header > b { color: color-mix(in srgb, var(--teal) 15%, var(--paper)); font-family: var(--font-condensed); font-size: 46px; line-height: 1; }
+.hr-registration-stage-body { min-width: 0; padding: 20px; }
 .hr-add-employee-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .hr-add-employee-fields .span-two { grid-column: 1 / -1; }
+.hr-education-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .hr-field-error { color: var(--coral)!important; font-size: 7px!important; margin: 0!important; }
 .hr-field-hint { color: var(--muted); font-size: 7px; line-height: 1.4; }
 .hr-add-employee-fields input[readonly] { background: var(--soft); color: var(--muted); }
-.hr-hiring-section { overflow: hidden; position: relative; }
-.hr-hiring-section .panel-header { padding-left: 54px; }
-.hr-hiring-section .panel-header > span { max-width: 45%; text-align: right; }
-.hr-section-icon { align-items: center; background: color-mix(in srgb, var(--teal) 11%, transparent); color: var(--teal); display: flex; height: 32px; justify-content: center; left: 12px; position: absolute; top: 8px; width: 32px; }
-.hr-document-grid { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 17px; }
+.hr-registration-final-step { display: grid; gap: 18px; }
+.hr-document-grid { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .hr-document-upload { align-content: start; background: var(--canvas); border: 1px dashed color-mix(in srgb, var(--teal) 35%, var(--border)); display: grid; gap: 12px; min-height: 155px; padding: 14px; }
+.hr-document-upload.has-files { border-style: solid; border-color: color-mix(in srgb, var(--emerald) 45%, var(--border)); }
 .hr-document-upload-copy { align-items: flex-start; display: flex; gap: 10px; }
 .hr-document-upload-copy > span { align-items: center; background: var(--paper); border: 1px solid var(--border); color: var(--teal); display: flex; flex: 0 0 auto; height: 34px; justify-content: center; width: 34px; }
 .hr-document-upload-copy > div { display: flex; flex-direction: column; min-width: 0; }
@@ -532,7 +567,29 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
 .hr-document-upload li strong { font-size: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .hr-document-upload li small { color: var(--muted); font-size: 7px; margin-top: 3px; }
 .hr-document-upload li button { color: var(--coral); flex: 0 0 auto; }
-.hr-attachment-error { background: color-mix(in srgb, var(--coral) 8%, var(--paper)); border-top: 1px solid color-mix(in srgb, var(--coral) 30%, var(--border)); color: var(--coral); font-size: 8px; padding: 11px 17px; }
+.hr-attachment-error { background: color-mix(in srgb, var(--coral) 8%, var(--paper)); border: 1px solid color-mix(in srgb, var(--coral) 30%, var(--border)); border-radius: 8px; color: var(--coral); font-size: 8px; padding: 11px 13px; }
+.hr-registration-review { background: linear-gradient(135deg, color-mix(in srgb, var(--teal) 6%, var(--canvas)), var(--canvas)); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.hr-registration-review > header { align-items: center; border-bottom: 1px solid var(--border); display: flex; gap: 10px; padding: 13px 15px; }
+.hr-registration-review > header > span { align-items: center; background: color-mix(in srgb, var(--emerald) 12%, var(--paper)); border-radius: 8px; color: var(--emerald); display: flex; height: 34px; justify-content: center; width: 34px; }
+.hr-registration-review > header > div { display: flex; flex-direction: column; }
+.hr-registration-review > header strong { font-size: 9px; }
+.hr-registration-review > header small { color: var(--muted); font-size: 7px; margin-top: 3px; }
+.hr-registration-review dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; }
+.hr-registration-review dl div { border-right: 1px solid var(--border); border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 5px; min-width: 0; padding: 12px 15px; }
+.hr-registration-review dl div:nth-child(-n+3) { border-top: 0; }
+.hr-registration-review dl div:nth-child(3n) { border-right: 0; }
+.hr-registration-review dt { color: var(--muted); font-size: 7px; }
+.hr-registration-review dd { font-size: 8px; font-weight: 600; margin: 0; overflow-wrap: anywhere; }
+.hr-registration-actions { align-items: center; background: color-mix(in srgb, var(--canvas) 70%, var(--paper)); border-top: 1px solid var(--border); display: grid; gap: 12px; grid-template-columns: minmax(170px, 1fr) auto auto; padding: 13px 16px; position: sticky; bottom: 0; z-index: 5; }
+.hr-registration-save-state { align-items: center; display: flex; gap: 8px; min-width: 0; }
+.hr-registration-save-state > i { background: var(--emerald); border-radius: 50%; box-shadow: 0 0 0 4px color-mix(in srgb, var(--emerald) 10%, transparent); flex: 0 0 auto; height: 7px; width: 7px; }
+.hr-registration-save-state > i.dirty { background: var(--gold); box-shadow: 0 0 0 4px color-mix(in srgb, var(--gold) 10%, transparent); }
+.hr-registration-save-state > span { display: flex; flex-direction: column; font-size: 8px; min-width: 0; }
+.hr-registration-save-state small { color: var(--muted); font-size: 7px; margin-top: 2px; }
+.hr-registration-secondary-actions, .hr-registration-navigation { align-items: center; display: flex; gap: 8px; }
+.hr-registration-navigation .primary-button { min-width: 130px; }
+.text-button { align-items: center; background: transparent; border: 0; color: var(--muted); display: inline-flex; font-size: 8px; gap: 6px; min-height: 34px; padding: 0 8px; }
+.text-button:hover { color: var(--coral); }
 .hr-attachment-controls { align-items: center; border-bottom: 1px solid var(--border); display: flex; gap: 9px; padding: 14px 17px; }
 .hr-attachment-controls select { background: var(--canvas); border: 1px solid var(--border); border-radius: var(--radius); color: var(--ink); font-size: 8px; min-height: 34px; padding: 0 10px; }
 .hr-attachment-controls label { cursor: pointer; }
@@ -583,8 +640,17 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
   .hr-profile-header { grid-template-columns: 56px 1fr 1fr; }
   .hr-profile-score { grid-column: 1 / -1; }
   .hr-employee-hero { grid-template-columns: 1fr 1fr; }
+  .hr-registration-hero { grid-template-columns: minmax(0, 1fr) 220px; }
   .hr-add-employee-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .hr-document-grid { grid-template-columns: 1fr; }
+  .hr-registration-review dl { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hr-registration-review dl div, .hr-registration-review dl div:nth-child(-n+3) { border-top: 1px solid var(--border); }
+  .hr-registration-review dl div:nth-child(-n+2) { border-top: 0; }
+  .hr-registration-review dl div:nth-child(3n) { border-right: 1px solid var(--border); }
+  .hr-registration-review dl div:nth-child(2n) { border-right: 0; }
+  .hr-registration-actions { grid-template-columns: minmax(160px, 1fr) auto; }
+  .hr-registration-secondary-actions { justify-content: flex-end; }
+  .hr-registration-navigation { grid-column: 1 / -1; justify-content: flex-end; }
   .hr-person { grid-column: 1 / -1; }
 }
 
@@ -605,15 +671,31 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
   .hr-route-preview i { flex: 0 0 12px; margin: 0 0 0 7px; min-height: 12px; width: 1px; }
   .hr-form-footer { align-items: stretch; flex-direction: column; gap: 10px; }
   .hr-form-footer .primary-button { width: 100%; }
+  .hr-registration-hero { gap: 18px; grid-template-columns: 1fr; padding: 18px; }
+  .hr-registration-progress { padding: 12px; }
+  .hr-registration-timeline { padding: 13px 4px 11px; }
+  .hr-registration-timeline button { padding: 0 2px; }
+  .hr-registration-timeline button > span { height: 34px; width: 34px; }
+  .hr-registration-timeline li::after { left: calc(50% + 17px); right: calc(-50% + 17px); top: 16px; }
+  .hr-registration-timeline button > div { display: none; }
+  .hr-registration-stage > header { grid-template-columns: 40px minmax(0, 1fr); padding: 14px; }
+  .hr-registration-stage-icon { height: 40px; width: 40px; }
+  .hr-registration-stage > header > b { display: none; }
+  .hr-registration-stage > header h2 { font-size: 15px; }
+  .hr-registration-stage-body { padding: 14px; }
   .hr-add-employee-fields { grid-template-columns: 1fr; }
-  .hr-hiring-section .panel-header { align-items: flex-start; flex-direction: column; gap: 3px; justify-content: center; padding: 8px 12px 8px 54px; }
-  .hr-hiring-section .panel-header > span { max-width: 100%; text-align: left; }
   .hr-add-employee-fields .span-two { grid-column: auto; }
+  .hr-education-fields { grid-template-columns: 1fr; }
+  .hr-registration-review dl { grid-template-columns: 1fr; }
+  .hr-registration-review dl div, .hr-registration-review dl div:nth-child(-n+2), .hr-registration-review dl div:nth-child(2n), .hr-registration-review dl div:nth-child(3n) { border-right: 0; border-top: 1px solid var(--border); }
+  .hr-registration-review dl div:first-child { border-top: 0; }
+  .hr-registration-actions { align-items: stretch; grid-template-columns: 1fr; padding: 12px; position: static; }
+  .hr-registration-secondary-actions, .hr-registration-navigation { grid-column: auto; justify-content: stretch; }
+  .hr-registration-secondary-actions > *, .hr-registration-navigation > * { flex: 1; justify-content: center; }
+  .hr-registration-save-state { padding: 3px 2px; }
   .hr-attachment-zone { flex-wrap: wrap; }
   .hr-attachment-zone ul { border-left: 0; border-top: 1px solid var(--border); flex-basis: 100%; margin: 5px 0 0; padding: 12px 0 0; }
   .hr-attachment-controls { align-items: stretch; flex-direction: column; }
-  .hr-add-employee-actions { align-items: stretch; flex-direction: column; }
-  .hr-add-employee-actions > span { margin: 0 0 4px; }
   .hr-memorandum-preview article { padding: 28px 24px; }
   .hr-add-employee-shortcut { grid-template-columns: 36px 1fr; }
   .hr-add-employee-shortcut .primary-button { grid-column: 1 / -1; justify-content: center; }
@@ -918,3 +1000,11 @@ body { font-size: 14px; line-height: 1.5; }
   .planned-list time { grid-column: 2; grid-row: 2; text-align: left; }
   .planned-list article > button { grid-column: 3; grid-row: 1 / span 2; }
 }
+
+/* Employee absences (профиль сотрудника) */
+.hr-absence-status { border: 1px solid var(--border); border-radius: 999px; font-size: 7.5px; font-weight: 600; padding: 3px 9px; text-transform: uppercase; white-space: nowrap; }
+.hr-absence-scheduled { color: var(--violet); }
+.hr-absence-active { color: var(--teal); }
+.hr-absence-completed { color: var(--muted); }
+.hr-absence-cancelled { color: var(--coral); text-decoration: line-through; }
+.hr-empty-note { color: var(--muted); font-size: 9px; margin: 0; padding: 14px 17px; }

@@ -1,7 +1,7 @@
 """absence leave and business trips
 
 Revision ID: 0005_absence
-Revises: 0004_module2
+Revises: 0004_module2, 0004_employee_absences
 Create Date: 2026-07-16
 """
 
@@ -12,12 +12,22 @@ from alembic import op
 from sqlalchemy.dialects import postgresql
 
 revision: str = "0005_absence"
-down_revision: str | None = "0004_module2"
+down_revision: str | Sequence[str] | None = (
+    "0004_module2",
+    "0004_employee_absences",
+)
 branch_labels: str | Sequence[str] | None = None
 depends_on: str | Sequence[str] | None = None
 
 
 def upgrade() -> None:
+    op.add_column("employee_absences", sa.Column("source_type", sa.String(40), nullable=True))
+    op.add_column("employee_absences", sa.Column("source_id", sa.UUID(), nullable=True))
+    op.create_unique_constraint(
+        "uq_employee_absences_source",
+        "employee_absences",
+        ["source_type", "source_id"],
+    )
     op.create_table(
         "leave_types",
         sa.Column("organization_id", sa.UUID(), nullable=False),
@@ -200,3 +210,6 @@ def downgrade() -> None:
     op.drop_table("leave_requests")
     op.drop_table("leave_balances")
     op.drop_table("leave_types")
+    op.drop_constraint("uq_employee_absences_source", "employee_absences", type_="unique")
+    op.drop_column("employee_absences", "source_id")
+    op.drop_column("employee_absences", "source_type")

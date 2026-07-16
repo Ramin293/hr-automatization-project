@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
-from datetime import date, timedelta
+from datetime import date
 from decimal import Decimal
 from typing import Any, cast
-from uuid import UUID
+from uuid import UUID, uuid4
 
-from sqlalchemy import func, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.core.audit.repository import SqlAlchemyAuditLog
@@ -15,7 +15,11 @@ from app.core.errors import ConcurrencyConflictError, ResourceNotFoundError, Val
 from app.core.errors.codes import ErrorCode
 from app.core.events.domain import ApplicationEvent, EventName
 from app.core.events.repository import SqlAlchemyTransactionalOutbox
-from app.modules.employees.infrastructure.models import EmployeeAssignmentModel, EmployeeModel
+from app.modules.employees.infrastructure.models import (
+    EmployeeAbsenceModel,
+    EmployeeAssignmentModel,
+    EmployeeModel,
+)
 from app.modules.organization.infrastructure.models import StaffingSlotModel
 from app.modules.workflow.infrastructure.operations import SqlAlchemyWorkflowOperations
 from app.shared.time import utc_now
@@ -111,7 +115,7 @@ class SqlAlchemyAbsenceOperations:
                 )
             unit_id = await self._employee_unit(session, organization_id, employee_id)
             start, end = _dates(data)
-            days = _business_days(start, end)
+            days = _leave_days(start, end)
             await self._ensure_no_overlap(session, employee_id, start, end)
             leave_type = await session.get(LeaveTypeModel, _uuid(data, "leaveTypeId"))
             if (
@@ -217,6 +221,7 @@ class SqlAlchemyAbsenceOperations:
                 row.status = "approved"
                 row.approved_at = utc_now()
                 await self._consume_balance(session, row)
+                await self._register_calendar_absence(session, row, actor_id, "vacation")
             elif decision == "return":
                 row.returned_from_stage = stage
                 row.status = "returned"
@@ -268,7 +273,7 @@ class SqlAlchemyAbsenceOperations:
                 )
             start, end = _dates(data)
             old_days = row.requested_days
-            new_days = _business_days(start, end)
+            new_days = _leave_days(start, end)
             await self._ensure_no_overlap(session, row.employee_id, start, end, exclude_id=row.id)
             await self._resize_reservation(session, row, old_days, new_days)
             row.start_date, row.end_date, row.requested_days = start, end, new_days
@@ -299,6 +304,7 @@ class SqlAlchemyAbsenceOperations:
                 raise ValidationError("Leave can no longer be cancelled.")
             before = _view(row)
             await self._release_balance(session, row, approved=row.status == "approved")
+            await self._cancel_calendar_absence(session, "leave_request", row.id)
             row.status = "cancelled"
             row.cancelled_at = utc_now()
             row.cancellation_reason = _required_text(reason)
@@ -402,6 +408,7 @@ class SqlAlchemyAbsenceOperations:
                 row.status = "registered"
                 row.approved_at = row.approved_at or utc_now()
                 row.registered_at = utc_now()
+                await self._register_calendar_absence(session, row, actor_id, "business_trip")
                 action = "complete"
             elif decision == "return":
                 row.returned_from_stage = stage
@@ -491,6 +498,7 @@ class SqlAlchemyAbsenceOperations:
             if row.status in {"cancelled", "rejected"} or row.start_date <= date.today():
                 raise ValidationError("Trip can no longer be cancelled.")
             before = _view(row)
+            await self._cancel_calendar_absence(session, "business_trip_request", row.id)
             row.status = "cancelled"
             row.cancelled_at = utc_now()
             row.cancellation_reason = _required_text(reason)
@@ -565,7 +573,24 @@ class SqlAlchemyAbsenceOperations:
         if exclude_id:
             leave = leave.where(LeaveRequestModel.id != exclude_id)
             trip = trip.where(BusinessTripRequestModel.id != exclude_id)
-        if await session.scalar(leave) or await session.scalar(trip):
+        calendar = select(EmployeeAbsenceModel.id).where(
+            EmployeeAbsenceModel.employee_id == employee_id,
+            EmployeeAbsenceModel.status != "cancelled",
+            EmployeeAbsenceModel.date_from <= end,
+            EmployeeAbsenceModel.date_to >= start,
+        )
+        if exclude_id:
+            calendar = calendar.where(
+                or_(
+                    EmployeeAbsenceModel.source_id.is_(None),
+                    EmployeeAbsenceModel.source_id != exclude_id,
+                )
+            )
+        if (
+            await session.scalar(leave)
+            or await session.scalar(trip)
+            or await session.scalar(calendar)
+        ):
             raise ValidationError(
                 "Absence dates overlap an existing request.", code=ErrorCode.ABSENCE_DATE_CONFLICT
             )
@@ -617,6 +642,75 @@ class SqlAlchemyAbsenceOperations:
                     code=ErrorCode.LEAVE_BALANCE_INSUFFICIENT,
                 )
             balance.reserved_days += new - old
+
+    async def _register_calendar_absence(
+        self,
+        session: AsyncSession,
+        row: LeaveRequestModel | BusinessTripRequestModel,
+        actor_id: UUID,
+        absence_type: str,
+    ) -> None:
+        source_type = (
+            "leave_request" if isinstance(row, LeaveRequestModel) else "business_trip_request"
+        )
+        existing = await session.scalar(
+            select(EmployeeAbsenceModel.id).where(
+                EmployeeAbsenceModel.source_type == source_type,
+                EmployeeAbsenceModel.source_id == row.id,
+            )
+        )
+        if existing is not None:
+            return
+        conflict = await session.scalar(
+            select(EmployeeAbsenceModel.id).where(
+                EmployeeAbsenceModel.employee_id == row.employee_id,
+                EmployeeAbsenceModel.status != "cancelled",
+                EmployeeAbsenceModel.date_from <= row.end_date,
+                EmployeeAbsenceModel.date_to >= row.start_date,
+            )
+        )
+        if conflict is not None:
+            raise ValidationError(
+                "The approved absence overlaps a registered employee absence.",
+                code=ErrorCode.ABSENCE_DATE_CONFLICT,
+            )
+        reason = row.reason if isinstance(row, LeaveRequestModel) else row.purpose
+        details = None if isinstance(row, LeaveRequestModel) else row.destination
+        session.add(
+            EmployeeAbsenceModel(
+                id=uuid4(),
+                employee_id=row.employee_id,
+                absence_type=absence_type,
+                date_from=row.start_date,
+                date_to=row.end_date,
+                reason=(reason or "Approved absence")[:1000],
+                details=details[:300] if details else None,
+                status="scheduled",
+                created_by=actor_id,
+                source_document_id=None,
+                source_type=source_type,
+                source_id=row.id,
+                created_at=utc_now(),
+                updated_at=utc_now(),
+                revision=1,
+            )
+        )
+
+    async def _cancel_calendar_absence(
+        self, session: AsyncSession, source_type: str, source_id: UUID
+    ) -> None:
+        absence = await session.scalar(
+            select(EmployeeAbsenceModel)
+            .where(
+                EmployeeAbsenceModel.source_type == source_type,
+                EmployeeAbsenceModel.source_id == source_id,
+            )
+            .with_for_update()
+        )
+        if absence is not None and absence.status != "cancelled":
+            absence.status = "cancelled"
+            absence.updated_at = utc_now()
+            absence.revision += 1
 
     async def _audit(
         self,
@@ -688,17 +782,8 @@ def _dates(data: Mapping[str, object]) -> tuple[date, date]:
     return start, end
 
 
-def _business_days(start: date, end: date) -> Decimal:
-    days = sum(
-        1
-        for offset in range((end - start).days + 1)
-        if (start + timedelta(days=offset)).weekday() < 5
-    )
-    if not days:
-        raise ValidationError(
-            "Leave must contain at least one working day.", code=ErrorCode.ABSENCE_DATE_INVALID
-        )
-    return Decimal(days)
+def _leave_days(start: date, end: date) -> Decimal:
+    return Decimal((end - start).days + 1)
 
 
 def _uuid(data: Mapping[str, object], key: str) -> UUID:

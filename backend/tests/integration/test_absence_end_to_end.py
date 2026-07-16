@@ -7,6 +7,7 @@ import pytest
 from app.core.errors import ValidationError
 from app.modules.absence.infrastructure.models import LeaveBalanceModel, LeaveTypeModel
 from app.modules.absence.infrastructure.operations import SqlAlchemyAbsenceOperations
+from app.modules.employees.infrastructure.models import EmployeeAbsenceModel
 from app.modules.workflow.infrastructure.models import ProcessInstanceModel, WorkflowTaskModel
 from app.seed import ORGANIZATION_ID, _development_user_id, _seed_id
 from sqlalchemy import func, select
@@ -119,11 +120,19 @@ async def test_leave_return_resubmit_approval_is_atomic_and_idempotent(
                 LeaveBalanceModel.year == corrected_start.year,
             )
         )
+        calendar_absence = await session.scalar(
+            select(EmployeeAbsenceModel).where(
+                EmployeeAbsenceModel.source_type == "leave_request",
+                EmployeeAbsenceModel.source_id == request["id"],
+            )
+        )
     assert process is not None and process.status == "completed"
     assert [task.status for task in tasks] == ["completed", "completed"]
     assert balance is not None
     assert balance.reserved_days == 0
     assert balance.used_days == approved["requested_days"]
+    assert calendar_absence is not None
+    assert calendar_absence.absence_type == "vacation"
 
 
 @pytest.mark.asyncio
@@ -279,5 +288,13 @@ async def test_business_trip_creates_sequential_tasks_and_cancellation_closes_th
         )
     async with factory() as session:
         registered_process = await session.get(ProcessInstanceModel, registered_process_id)
+        registered_absence = await session.scalar(
+            select(EmployeeAbsenceModel).where(
+                EmployeeAbsenceModel.source_type == "business_trip_request",
+                EmployeeAbsenceModel.source_id == registered["id"],
+            )
+        )
     assert registered["status"] == "registered"
     assert registered_process is not None and registered_process.status == "completed"
+    assert registered_absence is not None
+    assert registered_absence.absence_type == "business_trip"
