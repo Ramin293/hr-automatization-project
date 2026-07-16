@@ -15,6 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import FromClause
 
 from app.core.database import session_scope
+from app.module2_seed import seed_module2
 from app.modules.access_control.domain.permissions import PERMISSION_CATALOG
 from app.modules.access_control.domain.seed_roles import SEED_ROLES
 from app.modules.access_control.infrastructure.models import (
@@ -291,6 +292,12 @@ BASE_SLOTS: tuple[SlotSeed, ...] = (
     ),
     SlotSeed("advisor-chairman", "MANAGEMENT", "advisor_chairman", "chairman"),
     SlotSeed("risk-manager", "MANAGEMENT", "risk_manager", "chairman"),
+    SlotSeed(
+        "stabilization-specialist-vacancy",
+        "STABILIZATION_FUND",
+        "specialist",
+        "stabilization-fund-director",
+    ),
     SlotSeed(
         "deputy-stabilization",
         "MANAGEMENT",
@@ -907,13 +914,21 @@ async def seed_database() -> None:
         await _seed_structure(session)
         await _seed_demo_employment(session)
         await _seed_role_assignments(session)
+        await seed_module2(
+            session,
+            organization_id=ORGANIZATION_ID,
+            actor_id=_development_user_id("admin"),
+            timestamp=SEED_TIMESTAMP,
+            seed_id=_seed_id,
+            insert_rows=_insert_rows,
+        )
 
 
 def main() -> None:
     # psycopg async requires a selector loop on Windows; it is also valid on POSIX.
     with asyncio.Runner(loop_factory=asyncio.SelectorEventLoop) as runner:
         runner.run(seed_database())
-    print(f"Module 1 seed completed for organization {ORGANIZATION_ID}.")
+    print(f"Module 1 and Module 2 seed completed for organization {ORGANIZATION_ID}.")
 
 
 if __name__ == "__main__":

@@ -24,6 +24,17 @@ REQUIRED_PATHS = frozenset(
         "/api/v1/access/roles",
         "/api/v1/access/permissions",
         "/api/v1/audit/events",
+        "/api/v1/workflow/definitions",
+        "/api/v1/workflow/instances",
+        "/api/v1/workflow/tasks/my",
+        "/api/v1/workflow/forms",
+        "/api/v1/workflow/form-submissions",
+        "/api/v1/documents/records",
+        "/api/v1/documents/records/{document_id}/versions",
+        "/api/v1/recruitment/requests",
+        "/api/v1/recruitment/applications",
+        "/api/v1/recruitment/candidates/{item_id}/anonymize",
+        "/api/v1/terminations",
     }
 )
 

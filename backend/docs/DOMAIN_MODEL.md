@@ -1,5 +1,21 @@
 # Domain model
 
+## Module 2 aggregates
+
+Module 2 adds four bounded areas without changing Module 1 ownership:
+
+- Workflow owns definition/version/actor/step/transition, instance/task/history and versioned
+  form/submission aggregates.
+- Documents owns type/template/version, record/content-version, checklist, signature,
+  registration and acknowledgement aggregates.
+- Recruitment owns request/staffing-review, vacancy/publication, candidate/application,
+  screening/interview/evaluation, commission/decision, offer, hiring and onboarding aggregates.
+- Termination owns reason, case, offboarding task and exit-interview aggregates.
+
+Hiring is the only Module 2 transaction that creates Module 1 Person/Employee/Assignment records;
+termination schedules and later ends Module 1 assignments. Both lock and validate authoritative
+staffing/assignment rows. Cross-module references are UUID foreign keys, not copied display names.
+
 ## Organization and structure versions
 
 `Organization` is a legal/employing entity identified by UUID and stable code. The MVP seed has

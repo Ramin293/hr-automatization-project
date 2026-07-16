@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import os
+import sys
 from collections.abc import Coroutine, Iterator
 from importlib import import_module
 from pathlib import Path
@@ -94,6 +95,8 @@ def _reset_public_schema(url: URL) -> None:
 
 
 def pytest_configure(config: pytest.Config) -> None:
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     config.addinivalue_line(
         "markers",
         "integration: requires a dedicated PostgreSQL test database",

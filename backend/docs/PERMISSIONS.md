@@ -75,6 +75,25 @@ and its scope reference covers the stored target. The delegator must possess del
 a scoped actor may delegate only their own authority, and unit references follow stable identity
 across organization versions. A future policy can further restrict which permissions are delegable.
 
+## Module 2 permission families
+
+Module 2 adds stable workflow, document, recruitment/hiring and termination/offboarding permission
+families to the same catalog. The deterministic seed assigns them to functional demonstration
+roles. Workflow actor rules resolve permission holders through active temporal role assignments and
+authoritative organization scopes.
+
+- Workflow: definition read/manage/review/publish, instance/task read, task act/reassign.
+- Documents: read/sensitive read, create/upload/generate/review/sign/register, acknowledge,
+  acknowledgement assignment and archive.
+- Recruitment: request creation/read/reviews, vacancy management/publication, candidate normal and
+  sensitive access, screening, interviews/evaluations, commissions, offers and hiring.
+- Termination: initiate/read, HR/legal review, sign/register, task-specific handover/assets/IAM/
+  settlement/exit-interview permissions, schedule, complete and cancel.
+
+Path IDs never grant access. Each endpoint authorizes a stable permission and verifies the stored
+resource organization. Unit-sensitive operations use authoritative assignments/staffing units for
+scope evaluation rather than trusting request display data.
+
 ## Frontend behavior
 
 The frontend may hide controls using permission summaries, but this is usability only. It must

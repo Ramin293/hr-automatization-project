@@ -5,7 +5,10 @@ from __future__ import annotations
 from datetime import date
 from uuid import UUID, uuid4
 
+import app.models  # noqa: F401
 import pytest
+from app.core.database import Base
+from app.seed import DIRECTOR_EMPLOYEE_ID, EMPLOYEE_EMPLOYEE_ID, _seed_id
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import Connection, inspect, text
 from sqlalchemy.exc import DBAPIError, IntegrityError
@@ -13,34 +16,7 @@ from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine
 
 pytestmark = pytest.mark.integration
 
-EXPECTED_TABLES = {
-    "access_scope_units",
-    "access_scopes",
-    "alembic_version",
-    "audit_events",
-    "delegations",
-    "employee_assignment_review_requests",
-    "employee_assignments",
-    "employees",
-    "organization_policies",
-    "organization_relationship_types",
-    "organization_relationships",
-    "organization_structure_review_requests",
-    "organization_structure_versions",
-    "organization_unit_type_allowed_parents",
-    "organization_unit_types",
-    "organization_units",
-    "organizations",
-    "outbox_events",
-    "people",
-    "permissions",
-    "position_definitions",
-    "role_permissions",
-    "roles",
-    "staffing_slots",
-    "user_accounts",
-    "user_role_assignments",
-}
+EXPECTED_TABLES = set(Base.metadata.tables) | {"alembic_version"}
 
 
 def _schema_snapshot(connection: Connection) -> tuple[set[str], str]:
@@ -96,11 +72,9 @@ async def test_alembic_upgrade_from_empty_creates_complete_schema(
     async with migrated_database.connect() as connection:
         tables, revision = await connection.run_sync(_schema_snapshot)
 
-    from app.core.database import Base
-
     assert tables == EXPECTED_TABLES
     assert set(Base.metadata.tables) == EXPECTED_TABLES - {"alembic_version"}
-    assert revision == "0001_module1_initial"
+    assert revision == "0004_module2"
 
 
 @pytest.mark.asyncio
@@ -391,8 +365,10 @@ async def test_seed_is_idempotent_and_api_reports_database_ready(
                         (SELECT count(*) FROM organization_units) AS organization_units,
                         (SELECT count(*) FROM roles WHERE system = true) AS system_roles,
                         (SELECT count(*) FROM user_role_assignments) AS role_assignments,
-                        (SELECT count(*) FROM employees) AS employees,
-                        (SELECT count(*) FROM employee_assignments WHERE "primary" = true)
+                        (SELECT count(*) FROM employees
+                         WHERE id IN (:director_employee, :employee_employee)) AS employees,
+                        (SELECT count(*) FROM employee_assignments
+                         WHERE id IN (:director_assignment, :employee_assignment))
                             AS primary_assignments,
                         (
                             SELECT count(*)
@@ -415,15 +391,17 @@ async def test_seed_is_idempotent_and_api_reports_database_ready(
                                   SELECT id FROM organizations WHERE code = 'SPK-ERTIS'
                               )
                               AND employee.created_by IS NOT NULL
-                              AND assignment.status = 'active'
-                              AND assignment.effective_from <= CURRENT_DATE
-                              AND (
-                                  assignment.effective_to IS NULL
-                                  OR assignment.effective_to >= CURRENT_DATE
-                              )
+                              AND employee.id IN (:director_employee, :employee_employee)
+                              AND assignment.id IN (:director_assignment, :employee_assignment)
                         ) AS linked_current_personas
                     """
-                )
+                ),
+                {
+                    "director_employee": DIRECTOR_EMPLOYEE_ID,
+                    "employee_employee": EMPLOYEE_EMPLOYEE_ID,
+                    "director_assignment": _seed_id("employee-assignment", "development-director"),
+                    "employee_assignment": _seed_id("employee-assignment", "development-employee"),
+                },
             )
         ).one()
     assert dict(seed_counts._mapping) == {
@@ -436,6 +414,56 @@ async def test_seed_is_idempotent_and_api_reports_database_ready(
         "primary_assignments": 2,
         "viewer_assignments": 2,
         "linked_current_personas": 2,
+    }
+
+    async with seeded_database.connect() as connection:
+        module2_counts = (
+            await connection.execute(
+                text(
+                    """
+                    SELECT
+                        (SELECT count(*) FROM process_definitions
+                         WHERE code IN ('recruitment', 'hiring', 'termination')) AS processes,
+                        (SELECT count(*) FROM process_definition_versions
+                         WHERE status = 'published'
+                           AND process_definition_id IN (
+                               SELECT id FROM process_definitions
+                               WHERE code IN ('recruitment', 'hiring', 'termination')
+                           )) AS published_processes,
+                        (SELECT count(*) FROM document_types) AS document_types,
+                        (SELECT count(*) FROM form_definitions
+                         WHERE code IN ('candidate_application', 'hiring_checklist',
+                                        'offboarding_checklist')) AS forms,
+                        (SELECT count(*) FROM form_definition_versions
+                         WHERE status = 'published'
+                           AND form_definition_id IN (
+                               SELECT id FROM form_definitions
+                               WHERE code IN ('candidate_application', 'hiring_checklist',
+                                              'offboarding_checklist')
+                           )) AS published_forms,
+                        (SELECT count(*) FROM form_field_definitions
+                         WHERE form_version_id IN (
+                             SELECT version.id FROM form_definition_versions AS version
+                             JOIN form_definitions AS definition
+                               ON definition.id = version.form_definition_id
+                             WHERE definition.code IN ('candidate_application', 'hiring_checklist',
+                                                       'offboarding_checklist')
+                         )) AS form_fields,
+                        (SELECT count(*) FROM termination_reasons) AS termination_reasons,
+                        (SELECT count(*) FROM vacancy_publication_channels) AS channels
+                    """
+                )
+            )
+        ).one()
+    assert dict(module2_counts._mapping) == {
+        "processes": 3,
+        "published_processes": 3,
+        "document_types": 22,
+        "forms": 3,
+        "published_forms": 3,
+        "form_fields": 8,
+        "termination_reasons": 4,
+        "channels": 4,
     }
 
     from app.core.config import Environment, Settings

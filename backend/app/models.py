@@ -15,6 +15,7 @@ from app.modules.access_control.infrastructure.models import (
     RolePermissionModel,
     UserRoleAssignmentModel,
 )
+from app.modules.documents.infrastructure import models as document_models
 from app.modules.employees.infrastructure.models import (
     DelegationModel,
     EmployeeAssignmentModel,
@@ -35,6 +36,9 @@ from app.modules.organization.infrastructure.models import (
     StaffingSlotModel,
     StructureReviewRequestModel,
 )
+from app.modules.recruitment.infrastructure import models as recruitment_models
+from app.modules.termination.infrastructure import models as termination_models
+from app.modules.workflow.infrastructure import models as workflow_models
 
 __all__ = [
     "AccessScopeModel",
@@ -62,3 +66,6 @@ __all__ = [
     "UserAccountModel",
     "UserRoleAssignmentModel",
 ]
+
+# Keep module namespaces referenced: importing them registers every owned table in Base.metadata.
+_MODULE2_MODELS = (document_models, recruitment_models, termination_models, workflow_models)

@@ -1,6 +1,9 @@
 # HR Automatization Project
 
-ERTIS OPERATIONS combines the modular SPK FastAPI backend with this repository's React HR and document-workflow frontend. The frontend from `spk-corporate-system` is intentionally not included.
+ERTIS OPERATIONS combines this repository's React HR frontend with a modular FastAPI backend for
+identity, access control, organization structures, staffing, employees, configurable employee
+functions, workflow, documents, recruitment, hiring, termination/offboarding, immutable audit and
+transactional integration events. The frontend from `spk-corporate-system` is not included.
 
 ## Start the complete application
 
@@ -30,3 +33,13 @@ pnpm dev
 ```
 
 Vite proxies `/api` to `http://localhost:8000`, so the browser never needs a hard-coded backend origin.
+
+See [backend/README.md](backend/README.md) for configuration, authentication, migration, seed,
+and test details. Architecture and API documents are in [backend/docs](backend/docs).
+
+## Scope boundary
+
+Module 2 implements its workflow runtime locally; it does not pretend that Camunda, electronic
+signature, job boards, IAM, payroll, or asset systems are connected. Those actions are explicit,
+auditable manual/external-verification tasks behind adapter boundaries. Leave, time accounting,
+payroll calculation, transfers, and a universal low-code engine remain outside this module.
