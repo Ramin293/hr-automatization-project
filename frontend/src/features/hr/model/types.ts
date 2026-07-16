@@ -60,6 +60,28 @@ export interface CreateLeaveRequestInput {
   substitute: string;
 }
 
+export type EmployeeFunctionScope = 'collection' | 'employee';
+
+export interface EmployeeFunctionDescriptor {
+  key: string;
+  title: string;
+  description: string;
+  scope: EmployeeFunctionScope;
+}
+
+export interface CoreEmployeeRecord {
+  id: string;
+  revision: number;
+  employmentStatus: string;
+  active: boolean;
+  terminationDate: string | null;
+}
+
+export interface StaffingSlotOption {
+  id: string;
+  label: string;
+}
+
 export interface HrOverview {
   totalEmployees: number;
   activeEmployees: number;

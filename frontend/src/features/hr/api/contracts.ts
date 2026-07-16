@@ -1,10 +1,23 @@
-import type { CreateLeaveRequestInput, HrEmployee, HrOverview, LeaveRequest } from '../model/types';
+import type {
+  CoreEmployeeRecord,
+  CreateLeaveRequestInput,
+  EmployeeFunctionDescriptor,
+  HrEmployee,
+  HrOverview,
+  LeaveRequest,
+  StaffingSlotOption
+} from '../model/types';
 
 export interface HrRepository {
   getOverview(): Promise<HrOverview>;
   listEmployees(): Promise<HrEmployee[]>;
   getEmployee(id: string): Promise<HrEmployee>;
   getCurrentEmployee(): Promise<HrEmployee>;
+  listCollectionFunctions(): Promise<EmployeeFunctionDescriptor[]>;
+  listEmployeeFunctions(employeeId: string): Promise<EmployeeFunctionDescriptor[]>;
+  invokeEmployeeFunction(employeeId: string, key: string, payload: Record<string, unknown>): Promise<unknown>;
+  getCoreEmployee(employeeId: string): Promise<CoreEmployeeRecord>;
+  listVacantSlots(): Promise<StaffingSlotOption[]>;
   listLeaveRequests(): Promise<LeaveRequest[]>;
   createLeaveRequest(input: CreateLeaveRequestInput): Promise<LeaveRequest>;
   reviewLeaveRequest(id: string, decision: 'approve' | 'reject'): Promise<LeaveRequest>;

@@ -29,6 +29,12 @@ export default function HrEmployeesPage() {
   const [query, setQuery] = useState(queryParam);
   const [department, setDepartment] = useState('all');
   const result = useQuery({ queryKey: ['hr', 'employees'], queryFn: () => hrRepository.listEmployees(), enabled: canRead });
+  const collectionFunctions = useQuery({
+    queryKey: ['employee-functions', 'collection'],
+    queryFn: () => hrRepository.listCollectionFunctions(),
+    enabled: canRead
+  });
+  const canHire = (collectionFunctions.data ?? []).some((item) => item.key === 'employee.hire');
   
   const filtered = useMemo(() => {
     return (result.data ?? []).filter((employee) => {
@@ -45,7 +51,7 @@ export default function HrEmployeesPage() {
   }
 
   return <>
-    <PageHeader eyebrow="HR · Сотрудники" title="Сотрудники" actions={<button type="button" className="primary-button" onClick={() => setSearchParams((prev) => { prev.set('add', 'true'); return prev; })}><UserPlus size={16} /> Добавить сотрудника</button>} />
+    <PageHeader eyebrow="HR · Сотрудники" title="Сотрудники" actions={canHire ? <button type="button" className="primary-button" onClick={() => setSearchParams((prev) => { prev.set('add', 'true'); return prev; })}><UserPlus size={16} /> Добавить сотрудника</button> : undefined} />
     <div className="message-tabs" role="tablist" aria-label="Фильтр по департаментам">
       <button
         className={department === 'all' ? 'active' : ''}

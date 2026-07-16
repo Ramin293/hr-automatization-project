@@ -96,5 +96,53 @@ export class MockHrRepository implements HrRepository {
     return wait({ id: 'mock-hiring', number: 'HR-HIRE-MOCK', status: 'on_check', currentStep: 'HR completeness check' });
   }
 
+  async listCollectionFunctions() {
+    return wait([
+      {
+        key: 'employee.hire',
+        title: 'Нанять сотрудника',
+        description: 'Создать сотрудника и назначить его на штатную единицу.',
+        scope: 'collection' as const
+      }
+    ]);
+  }
+
+  async listEmployeeFunctions(employeeId: string) {
+    const employee = read().employees.find((item) => item.id === employeeId);
+    if (!employee) return wait([]);
+    return wait([
+      {
+        key: 'employee.terminate',
+        title: 'Уволить сотрудника',
+        description: 'Завершить трудовые отношения и закрыть активные назначения.',
+        scope: 'employee' as const
+      },
+      {
+        key: 'employee.transfer',
+        title: 'Перевести сотрудника',
+        description: 'Перевести сотрудника на другую штатную единицу.',
+        scope: 'employee' as const
+      }
+    ]);
+  }
+
+  async invokeEmployeeFunction(employeeId: string, key: string) {
+    return wait({ employeeId, key });
+  }
+
+  async getCoreEmployee(employeeId: string) {
+    return wait({
+      id: employeeId,
+      revision: 1,
+      employmentStatus: 'active',
+      active: true,
+      terminationDate: null
+    });
+  }
+
+  async listVacantSlots() {
+    return wait([{ id: 'slot-1', label: 'Специалист · IT Support' }]);
+  }
+
   async reset() { localStorage.removeItem(STORAGE_KEY); }
 }
