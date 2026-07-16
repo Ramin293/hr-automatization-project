@@ -54,7 +54,11 @@ describe('application runtime', () => {
     expect(screen.getAllByRole('link', { name: /^Сотрудники$/i }).length).toBeGreaterThan(0);
     expect(screen.getAllByRole('link', { name: /^Процессы/i }).length).toBeGreaterThan(0);
     expect(screen.getByRole('img', { name: 'Распределение сотрудников по типу присутствия' })).toBeTruthy();
-    expect(screen.getByRole('img', { name: 'HR-показатели, требующие контроля' })).toBeTruthy();
+    expect(screen.getByRole('group', { name: 'HR-показатели, требующие контроля' })).toBeTruthy();
+    expect(screen.getByRole('img', { name: 'Активность HR на 7 дней' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: '14 дней' }));
+    expect(screen.getByRole('img', { name: 'Активность HR на 14 дней' })).toBeTruthy();
+    expect(screen.queryByRole('heading', { name: 'СОТРУДНИКИ И ОТСУТСТВИЯ' })).toBeNull();
     expect(screen.queryByText(/Операционный день|Сводка дня|HR пространство/i)).toBeNull();
   });
 

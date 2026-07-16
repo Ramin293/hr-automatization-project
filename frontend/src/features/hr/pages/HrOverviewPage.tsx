@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query';
-import { AlertCircle, ArrowRight, CalendarCheck2, CheckSquare2, FileWarning, GraduationCap, UserCheck, UserPlus, UsersRound } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowRight, CalendarCheck2, FileWarning, GraduationCap, UserCheck, UserPlus, UsersRound } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { repositories } from '../../../repositories';
 import { PageHeader, QueryState, Section } from '../../../shared/components';
-import { BarChart, DonutChart } from '../../../shared/charts';
+import { ActivityChart, BarChart, DonutChart } from '../../../shared/charts';
 import { formatDate, statusLabels } from '../../../shared/format';
 import { usePermission } from '../../../shared/permissions';
 import { useDeveloperStore } from '../../../shared/store';
@@ -15,6 +16,7 @@ export default function HrOverviewPage() {
   const locale = useDeveloperStore((state) => state.locale);
   const canOpen = usePermission('hr.read');
   const isHr = persona === 'hr-specialist';
+  const [activityDays, setActivityDays] = useState<7 | 14>(7);
   const overview = useQuery({ queryKey: ['hr', 'overview'], queryFn: () => hrRepository.getOverview(), enabled: canOpen && isHr });
   const employee = useQuery({ queryKey: ['hr', 'employee', 'me'], queryFn: () => hrRepository.getCurrentEmployee(), enabled: canOpen && !isHr });
   const leaveRequests = useQuery({ queryKey: ['hr', 'leave'], queryFn: () => hrRepository.listLeaveRequests(), enabled: canOpen });
@@ -49,99 +51,47 @@ export default function HrOverviewPage() {
   const workforceTotal = Math.max(1, stats.activeEmployees + stats.onLeave + stats.onBusinessTrip + stats.onSickLeave);
   const presenceRate = Math.round(stats.activeEmployees / workforceTotal * 100);
   const workforceChart = [
-    { label: 'Активны', value: stats.activeEmployees, color: 'var(--teal)', detail: 'На рабочем месте' },
-    { label: 'В отпуске', value: stats.onLeave, color: 'var(--gold)', detail: 'Плановое отсутствие' },
-    { label: 'Командировка', value: stats.onBusinessTrip, color: 'var(--violet)', detail: 'Служебная поездка' },
-    { label: 'Больничный', value: stats.onSickLeave, color: 'var(--coral)', detail: 'Нетрудоспособность' },
+    { label: 'Активны', value: stats.activeEmployees, color: 'var(--teal)', detail: 'На рабочем месте', to: '/hr/employees' },
+    { label: 'В отпуске', value: stats.onLeave, color: 'var(--gold)', detail: 'Плановое отсутствие', to: '/hr/leave' },
+    { label: 'Командировка', value: stats.onBusinessTrip, color: 'var(--violet)', detail: 'Служебная поездка', to: '/hr/calendar' },
+    { label: 'Больничный', value: stats.onSickLeave, color: 'var(--coral)', detail: 'Нетрудоспособность', to: '/hr/sick-leave' },
   ];
   const controlChart = [
-    { label: 'Процессы', value: stats.activeProcesses, color: 'var(--teal)' },
-    { label: 'Дела < 90%', value: stats.incompleteFiles, color: 'var(--gold)' },
-    { label: 'Договоры', value: stats.expiringContracts, color: 'var(--violet)' },
-    { label: 'Просрочено', value: stats.overdueTasks, color: 'var(--coral)' },
+    { label: 'Процессы', value: stats.activeProcesses, color: 'var(--teal)', to: '/processes' },
+    { label: 'Дела < 90%', value: stats.incompleteFiles, color: 'var(--gold)', to: '/hr/documents' },
+    { label: 'Договоры', value: stats.expiringContracts, color: 'var(--violet)', to: '/hr/employees?query=2026' },
+    { label: 'Просрочено', value: stats.overdueTasks, color: 'var(--coral)', to: '/tasks?filter=overdue' },
   ];
+  const activityChart = Array.from({ length: activityDays }, (_, index) => {
+    const day = new Date();
+    day.setHours(0, 0, 0, 0);
+    day.setDate(day.getDate() + index);
+    const key = day.toISOString().slice(0, 10);
+    const messageCount = messages.data!.filter((item) => item.dueDate.slice(0, 10) === key).length;
+    const taskCount = activeTasks.filter((item) => item.dueDate.slice(0, 10) === key).length;
+    const leaveCount = leaveRequests.data!.filter((item) => item.startDate.slice(0, 10) === key).length;
+    return { label: day.toLocaleDateString('ru-RU', { day: '2-digit', month: 'short' }), value: messageCount + taskCount + leaveCount, detail: `${messageCount} сообщ. · ${taskCount} задач · ${leaveCount} отсутствий` };
+  });
 
   return <>
     <PageHeader eyebrow="HR · Главная" title="Рабочее пространство" actions={<><Link className="secondary-button" to="/hr/employees"><UsersRound size={16} /> Сотрудники</Link><Link className="primary-button" to="/hr/employees?add=true"><UserPlus size={16} /> Добавить сотрудника</Link></>} />
     
-    <div style={{ marginBottom: '14px' }}>
-      <Section title="СОТРУДНИКИ И ОТСУТСТВИЯ" meta={`${stats.activeEmployees} активных, ${stats.onLeave + stats.onBusinessTrip + stats.onSickLeave} отсутствуют`}>
-        <div className="hr-focus-list-horizontal">
-          <div>
-            <b className="tone-teal">{stats.activeEmployees}</b>
-            <span>
-              <strong>Активны</strong>
-              <small>В штате компании</small>
-            </span>
-          </div>
-          <div>
-            <b className="tone-gold">{stats.onLeave}</b>
-            <span>
-              <strong>В отпуске</strong>
-              <small>Текущие отсутствия</small>
-            </span>
-          </div>
-          <div>
-            <b className="tone-violet">{stats.onBusinessTrip}</b>
-            <span>
-              <strong>В командировке</strong>
-              <small>Служебные поездки</small>
-            </span>
-          </div>
-          <div>
-            <b className="tone-coral">{stats.onSickLeave}</b>
-            <span>
-              <strong>На больничном</strong>
-              <small>Временная нетрудоспособность</small>
-            </span>
-          </div>
-        </div>
-        <Link className="panel-link-compact" to="/hr/employees">Открыть сотрудников <ArrowRight size={15} /></Link>
-      </Section>
-    </div>
-
     <div className="dashboard-chart-grid hr-dashboard-charts">
       <Section title="Структура присутствия" meta={`${workforceTotal} сотрудников`}><DonutChart data={workforceChart} centerValue={`${presenceRate}%`} centerLabel="активны" ariaLabel="Распределение сотрудников по типу присутствия" /></Section>
       <Section title="HR-контроль" meta="Актуальные риски"><BarChart data={controlChart} ariaLabel="HR-показатели, требующие контроля" /></Section>
     </div>
+
+    <Section title="Активность" meta={`${activityDays} дней`} className="dashboard-activity-panel">
+      <div className="dashboard-chart-toolbar"><span>Сроки сообщений, задач и начало отсутствий</span><div><button type="button" className={activityDays === 7 ? 'active' : ''} onClick={() => setActivityDays(7)}>7 дней</button><button type="button" className={activityDays === 14 ? 'active' : ''} onClick={() => setActivityDays(14)}>14 дней</button></div></div>
+      <ActivityChart data={activityChart} ariaLabel={`Активность HR на ${activityDays} дней`} />
+    </Section>
 
     <div className="hr-overview-row-split">
       <Section title="Входящие сообщения" meta={`${messages.data!.length} в очереди`}><div className="queue-table"><div className="table-head"><span>Сообщение</span><span>Отправитель</span><span>Этап</span><span>Срок</span><span /></div>{messages.data!.slice(0, 5).map((item) => <Link to={`/correspondence/incoming/${item.id}`} className="table-row" key={item.id}><span><strong>{item.number}</strong><small>{item.subject}</small></span><span>{item.sender}</span><span><i className={`status-dot status-${item.status}`} />{statusLabels[item.status]}</span><span className={item.priority === 'urgent' ? 'text-coral' : ''}>{formatDate(item.dueDate, locale, 'dd MMM')}</span><ArrowRight size={15} /></Link>)}</div><Link className="panel-link" to="/correspondence/incoming">Все сообщения <ArrowRight size={15} /></Link></Section>
       <Section title="Активные согласования" meta={`${pending.length} ожидают HR`}><div className="hr-request-list">{pending.length ? pending.map((request) => <Link to="/processes?id=p-hr-leave" key={request.id}><article><span className="hr-list-icon"><CalendarCheck2 size={17} /></span><div><strong>{request.employeeName}</strong><small>{request.leaveType} · {request.days} дней · {request.documentNumber}</small></div><LeaveStatus status={request.status} /></article></Link>) : <div className="hr-inline-empty">Очередь согласований пуста</div>}</div><Link className="panel-link" to="/processes">Открыть процессы <ArrowRight size={15} /></Link></Section>
     </div>
 
-    <div className="hr-overview-row-split-reverse">
-      <Section title="Предупреждения">
-        <div className="hr-process-health-rich">
-          <Link to="/hr/employees?query=2026" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-            <div className="hr-alert-card tone-gold">
-              <span className="alert-icon"><FileWarning size={18} /></span>
-              <div className="alert-details">
-                <strong>{stats.expiringContracts} договоров</strong>
-                <small>Истекают в ближайшие 30 дней. Требуется продление.</small>
-              </div>
-            </div>
-          </Link>
-          <Link to="/tasks?filter=overdue" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-            <div className="hr-alert-card tone-coral">
-              <span className="alert-icon"><AlertCircle size={18} /></span>
-              <div className="alert-details">
-                <strong>{stats.overdueTasks} просрочено</strong>
-                <small>Задачи вышли за рамки планового SLA.</small>
-              </div>
-            </div>
-          </Link>
-          <Link to="/processes" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
-            <div className="hr-alert-card tone-teal">
-              <span className="alert-icon"><CheckSquare2 size={18} /></span>
-              <div className="alert-details">
-                <strong>{stats.activeProcesses} процессов</strong>
-                <small>Маршруты выполняются в штатном режиме.</small>
-              </div>
-            </div>
-          </Link>
-        </div>
-      </Section>
+    <div className="hr-overview-row-single">
       <Section title="Задачи" meta={`${activeTasks.length} активных`}><div className="task-compact-list">{activeTasks.slice(0, 4).map((task) => <Link to="/tasks" key={task.id}><span className={`priority-line priority-${task.priority}`} /><span><strong>{task.title}</strong><small>{task.process} · до {formatDate(task.dueDate, locale, 'dd MMM')}</small></span><ArrowRight size={15} /></Link>)}</div><Link className="panel-link" to="/tasks">Все задачи <ArrowRight size={15} /></Link></Section>
     </div>
   </>;

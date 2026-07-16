@@ -24,16 +24,16 @@ function OperationsDashboard() {
   const incoming = correspondence.data!;
   const taskItems = tasks.data!;
   const documentChart = [
-    { label: 'Зарегистрировано', value: incoming.filter((item) => item.status === 'registered' || item.status === 'resolution').length, color: 'var(--teal)', detail: 'В начале маршрута' },
-    { label: 'В работе', value: incoming.filter((item) => item.status === 'execution' || item.status === 'approval').length, color: 'var(--violet)', detail: 'Исполнение и согласование' },
-    { label: 'На подписи', value: incoming.filter((item) => item.status === 'signature' || item.status === 'dispatch').length, color: 'var(--gold)', detail: 'Финальный этап' },
-    { label: 'Завершено', value: incoming.filter((item) => item.status === 'completed').length, color: 'var(--emerald)', detail: 'Архив дня' },
+    { label: 'Зарегистрировано', value: incoming.filter((item) => item.status === 'registered' || item.status === 'resolution').length, color: 'var(--teal)', detail: 'В начале маршрута', to: '/correspondence/incoming' },
+    { label: 'В работе', value: incoming.filter((item) => item.status === 'execution' || item.status === 'approval').length, color: 'var(--violet)', detail: 'Исполнение и согласование', to: '/correspondence/incoming' },
+    { label: 'На подписи', value: incoming.filter((item) => item.status === 'signature' || item.status === 'dispatch').length, color: 'var(--gold)', detail: 'Финальный этап', to: '/correspondence/incoming' },
+    { label: 'Завершено', value: incoming.filter((item) => item.status === 'completed').length, color: 'var(--emerald)', detail: 'Архив дня', to: '/correspondence/incoming' },
   ];
   const taskChart = [
-    { label: 'Доступны', value: taskItems.filter((item) => item.state === 'available').length, color: 'var(--teal)' },
-    { label: 'В работе', value: taskItems.filter((item) => item.state === 'claimed').length, color: 'var(--violet)' },
-    { label: 'Просрочены', value: taskItems.filter((item) => item.state === 'overdue').length, color: 'var(--coral)' },
-    { label: 'Готовы', value: taskItems.filter((item) => item.state === 'completed').length, color: 'var(--emerald)' },
+    { label: 'Доступны', value: taskItems.filter((item) => item.state === 'available').length, color: 'var(--teal)', to: '/tasks' },
+    { label: 'В работе', value: taskItems.filter((item) => item.state === 'claimed').length, color: 'var(--violet)', to: '/tasks' },
+    { label: 'Просрочены', value: taskItems.filter((item) => item.state === 'overdue').length, color: 'var(--coral)', to: '/tasks?filter=overdue' },
+    { label: 'Готовы', value: taskItems.filter((item) => item.state === 'completed').length, color: 'var(--emerald)', to: '/tasks' },
   ];
   return <>
     <PageHeader eyebrow="Операционный центр" title="Центр управления" actions={<Link className="primary-button" to="/correspondence/incoming/new"><FileInput size={16} /> Регистрация письма</Link>} />
