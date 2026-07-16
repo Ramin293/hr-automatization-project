@@ -91,9 +91,21 @@ describe('application runtime', () => {
     useDeveloperStore.setState({ persona: 'hr-specialist' });
     renderRoute('/hr/hiring/add-employee');
 
-    expect(await screen.findByRole('heading', { name: 'Добавление сотрудника' })).toBeTruthy();
-    expect(screen.getByText('Добавление сотрудника', { selector: '.breadcrumbs strong' })).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: /Сохранить черновик/i }));
+    expect(await screen.findByRole('heading', { name: 'Регистрация сотрудника' })).toBeTruthy();
+    expect(screen.getByText('Регистрация сотрудника', { selector: '.breadcrumbs strong' })).toBeTruthy();
+    expect(screen.getByRole('list', { name: 'Этапы регистрации сотрудника' })).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Персональная информация' })).toBeTruthy();
+    expect(screen.getByText('Личные данные')).toBeTruthy();
+    expect(screen.getByText('Занятость')).toBeTruthy();
+    expect(screen.getByText('Образование')).toBeTruthy();
+    expect(screen.getAllByText('Документы').length).toBeGreaterThan(0);
+    expect(screen.queryByLabelText('Департамент')).toBeNull();
+
+    fireEvent.click(screen.getByRole('button', { name: /Продолжить/i }));
+    expect(await screen.findByText('Укажите фамилию')).toBeTruthy();
+    expect(screen.getByRole('heading', { name: 'Персональная информация' })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: /^Сохранить$/i }));
     expect(localStorage.getItem('ertis.hr.add-employee.draft.v1')).toContain('Зарина Ахметова');
     expect(screen.getByText(/Файлы не сохраняются/i)).toBeTruthy();
   });

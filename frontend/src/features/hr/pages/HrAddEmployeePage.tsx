@@ -1,9 +1,25 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowLeft, BriefcaseBusiness, CheckCircle2, FileText, GraduationCap, Info, Paperclip, RotateCcw, Save, Trash2, UserRound, X } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  BriefcaseBusiness,
+  Check,
+  CheckCircle2,
+  ChevronLeft,
+  FileText,
+  GraduationCap,
+  Info,
+  Paperclip,
+  RotateCcw,
+  Save,
+  Trash2,
+  UserRound,
+  X
+} from 'lucide-react';
 import { useEffect, useState, type InputHTMLAttributes, type ReactNode } from 'react';
 import { useForm, type FieldErrors, type UseFormRegister } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import { PageHeader, Section } from '../../../shared/components';
+import { PageHeader } from '../../../shared/components';
 import { usePermission } from '../../../shared/permissions';
 import { clearEmployeeDraft, restoreEmployeeDraft, saveEmployeeDraft } from '../add-employee/draft';
 import { addEmployeeDefaults } from '../add-employee/defaults';
@@ -15,7 +31,7 @@ import {
   positions,
   workArrangements,
   workSchedules,
-  type AttachmentCategory,
+  type AttachmentCategory
 } from '../add-employee/referenceData';
 import { addEmployeeSchema, type AddEmployeeFormValues } from '../add-employee/schema';
 import { validateAttachment, type EmployeeAttachment } from '../add-employee/utils';
@@ -34,6 +50,45 @@ type CommonFieldProps = {
   hint?: string;
 };
 
+type RegistrationStep = {
+  title: string;
+  shortTitle: string;
+  description: string;
+  icon: ReactNode;
+  fields: Array<keyof AddEmployeeFormValues>;
+};
+
+const registrationSteps: RegistrationStep[] = [
+  {
+    title: 'Персональная информация',
+    shortTitle: 'Личные данные',
+    description: 'Основные сведения, контакты и документ кандидата',
+    icon: <UserRound size={20} />,
+    fields: ['lastName', 'firstName', 'middleName', 'iin', 'birthDate', 'gender', 'citizenship', 'maritalStatus', 'personalPhone', 'personalEmail', 'address', 'identityDocumentType', 'identityDocumentNumber']
+  },
+  {
+    title: 'Предлагаемая занятость',
+    shortTitle: 'Занятость',
+    description: 'Должность, подразделение и условия выхода на работу',
+    icon: <BriefcaseBusiness size={20} />,
+    fields: ['department', 'position', 'employmentType', 'workArrangement', 'workplace', 'startDate', 'probationMonths', 'schedule', 'hiringReason']
+  },
+  {
+    title: 'Образование и опыт',
+    shortTitle: 'Образование',
+    description: 'Квалификация кандидата и релевантный опыт работы',
+    icon: <GraduationCap size={20} />,
+    fields: ['educationLevel', 'institution', 'specialization', 'totalExperience']
+  },
+  {
+    title: 'Документы и проверка',
+    shortTitle: 'Документы',
+    description: 'Вложения и итоговая проверка данных перед завершением',
+    icon: <Paperclip size={20} />,
+    fields: []
+  }
+];
+
 function Field({ name, label, register, errors, required, hint, ...props }: InputHTMLAttributes<HTMLInputElement> & CommonFieldProps) {
   const numericValue = name === 'probationMonths';
   return <label>{label}{required && <em>*</em>}<input {...register(name, numericValue ? { valueAsNumber: true } : undefined)} {...props} />{hint && !errors[name] && <small className="hr-field-hint">{hint}</small>}{errors[name] && <small className="hr-field-error">{String(errors[name]?.message)}</small>}</label>;
@@ -43,20 +98,27 @@ function SelectField({ name, label, options, register, errors, required }: Commo
   return <label>{label}{required && <em>*</em>}<select {...register(name)}><option value="">Выберите</option>{options.map((option) => <option key={option} value={option}>{option}</option>)}</select>{errors[name] && <small className="hr-field-error">{String(errors[name]?.message)}</small>}</label>;
 }
 
-function FormSection({ step, title, description, icon, children }: { step: string; title: string; description: string; icon: ReactNode; children: ReactNode }) {
-  return <Section title={`${step}. ${title}`} meta={description} className="hr-hiring-section"><div className="hr-section-icon" aria-hidden="true">{icon}</div><div className="field-grid hr-add-employee-fields">{children}</div></Section>;
+function scrollToWizard() {
+  const wizard = document.getElementById('employee-registration-wizard');
+  if (wizard && 'scrollIntoView' in wizard) wizard.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 export default function HrAddEmployeePage({ onBack }: { onBack?: () => void }) {
   const canOpen = usePermission('hr.employees.read');
   const form = useForm<AddEmployeeFormValues>({ resolver: zodResolver(addEmployeeSchema), mode: 'onBlur', defaultValues: addEmployeeDefaults });
+  const [activeStep, setActiveStep] = useState(0);
+  const [highestStep, setHighestStep] = useState(0);
   const [attachments, setAttachments] = useState<EmployeeAttachment[]>([]);
   const [notice, setNotice] = useState('');
   const [attachmentError, setAttachmentError] = useState('');
   const [confirmClear, setConfirmClear] = useState(false);
-  const { register, formState: { errors, isDirty }, getValues, handleSubmit, reset, watch } = form;
-  const educationLevel = watch('educationLevel');
+  const { register, formState: { errors, isDirty }, getValues, handleSubmit, reset, trigger, watch } = form;
+  const values = watch();
+  const educationLevel = values.educationLevel;
   const diplomaRequired = educationLevel !== 'Среднее общее';
+  const currentStep = registrationSteps[activeStep];
+  const progress = Math.round(((activeStep + 1) / registrationSteps.length) * 100);
+  const candidateName = [values.lastName, values.firstName, values.middleName].filter(Boolean).join(' ') || 'Новый сотрудник';
 
   useEffect(() => {
     const draft = restoreEmployeeDraft(localStorage);
@@ -77,9 +139,9 @@ export default function HrAddEmployeePage({ onBack }: { onBack?: () => void }) {
   if (!canOpen) return <div className="hr-access-denied"><span>HR</span><h1>Доступ ограничен</h1><p>Форма найма доступна только HR-роли.</p><Link className="secondary-button" to="/">На главную</Link></div>;
 
   const saveDraft = () => {
-    const values = getValues();
-    const draft = saveEmployeeDraft(localStorage, values);
-    reset(values);
+    const draftValues = getValues();
+    const draft = saveEmployeeDraft(localStorage, draftValues);
+    reset(draftValues);
     setNotice(`Черновик сохранён · ${new Date(draft.savedAt).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })}. Файлы не сохраняются.`);
   };
 
@@ -88,6 +150,8 @@ export default function HrAddEmployeePage({ onBack }: { onBack?: () => void }) {
     reset(addEmployeeDefaults);
     setAttachments([]);
     setAttachmentError('');
+    setActiveStep(0);
+    setHighestStep(0);
     setConfirmClear(false);
     setNotice('Форма и локальный черновик очищены');
   };
@@ -104,21 +168,42 @@ export default function HrAddEmployeePage({ onBack }: { onBack?: () => void }) {
     setAttachmentError(rejected.join(' '));
   };
 
+  const goToStep = (step: number) => {
+    if (step > highestStep) return;
+    setActiveStep(step);
+    scrollToWizard();
+  };
+
+  const goNext = async () => {
+    const valid = await trigger(currentStep.fields, { shouldFocus: true });
+    if (!valid) return;
+    const nextStep = Math.min(activeStep + 1, registrationSteps.length - 1);
+    setActiveStep(nextStep);
+    setHighestStep((current) => Math.max(current, nextStep));
+    scrollToWizard();
+  };
+
   const complete = handleSubmit(() => {
     const hasIdentity = attachments.some((item) => item.category === 'Удостоверение личности');
     const hasDiploma = attachments.some((item) => item.category === 'Диплом');
     if (!hasIdentity || (diplomaRequired && !hasDiploma)) {
       setAttachmentError(!hasIdentity ? 'Прикрепите копию документа, удостоверяющего личность.' : 'Для выбранного уровня образования нужно прикрепить диплом.');
+      setActiveStep(3);
+      setHighestStep(3);
       return;
     }
     setAttachmentError('');
     saveEmployeeDraft(localStorage, getValues());
-    setNotice('Данные кандидата заполнены. Автоматическое формирование PDF-заявления будет добавлено на следующем этапе.');
+    setNotice('Все четыре этапа заполнены. Данные готовы для формирования PDF-заявления.');
+  }, (invalidErrors) => {
+    const invalidStep = registrationSteps.findIndex((step) => step.fields.some((field) => invalidErrors[field]));
+    setActiveStep(invalidStep >= 0 ? invalidStep : 0);
+    setNotice('Проверьте обязательные поля отмеченного этапа.');
   });
 
   const documentUpload = (category: AttachmentCategory, title: string, description: string, required: boolean) => {
     const files = attachments.filter((item) => item.category === category);
-    return <div className="hr-document-upload">
+    return <div className={`hr-document-upload ${files.length ? 'has-files' : ''}`}>
       <div className="hr-document-upload-copy"><span><FileText size={18} /></span><div><strong>{title}{required && <em>*</em>}</strong><small>{description}</small></div></div>
       <label className="secondary-button"><Paperclip size={15} />{files.length ? 'Добавить ещё' : 'Выбрать файл'}<input type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" multiple onChange={(event) => { addFiles(Array.from(event.target.files ?? []), category); event.currentTarget.value = ''; }} /></label>
       {files.length > 0 && <ul>{files.map((item) => <li key={item.id}><span><strong>{item.file.name}</strong><small>{(item.file.size / 1024 / 1024).toFixed(2)} МБ</small></span><button type="button" className="icon-button" onClick={() => setAttachments((current) => current.filter((file) => file.id !== item.id))} aria-label={`Удалить ${item.file.name}`}><Trash2 size={15} /></button></li>)}</ul>}
@@ -126,55 +211,108 @@ export default function HrAddEmployeePage({ onBack }: { onBack?: () => void }) {
   };
 
   return <>
-    <PageHeader eyebrow="HR · Добавление сотрудника" title="Добавление сотрудника" actions={onBack ? <button type="button" className="secondary-button" onClick={onBack}><ArrowLeft size={16} /> Назад к списку</button> : undefined} />
-    <div className="hr-hiring-intro"><Info size={18} /><span><strong>PDF-заявление</strong><small>После заполнения формы здесь будет автоматически создаваться заявление на рассмотрение. На текущем этапе доступен только фронтенд формы.</small></span></div>
+    <PageHeader eyebrow="HR · Регистрация сотрудника" title="Регистрация сотрудника" actions={onBack ? <button type="button" className="secondary-button" onClick={onBack}><ArrowLeft size={16} /> Назад к списку</button> : undefined} />
+
+    <div className="hr-registration-hero">
+      <div className="hr-registration-hero-copy">
+        <span className="hr-registration-kicker">НОВАЯ КАРТОЧКА СОТРУДНИКА</span>
+        <h2>{candidateName}</h2>
+        <p>Заполните четыре коротких этапа. Данные сохраняются между переходами и не пропадут при возврате назад.</p>
+      </div>
+      <div className="hr-registration-progress" aria-label={`Заполнено ${progress}%`}>
+        <div><strong>{progress}%</strong><small>этап {activeStep + 1} из 4</small></div>
+        <span><i style={{ width: `${progress}%` }} /></span>
+      </div>
+    </div>
+
+    <div className="hr-hiring-intro"><Info size={18} /><span><strong>PDF-заявление появится позже</strong><small>Сейчас форма подготавливает и проверяет данные кандидата. Автоматическое формирование заявления будет подключено отдельным этапом.</small></span></div>
     {notice && <div className="hr-form-notice" role="status"><span><CheckCircle2 size={15} />{notice}</span><button type="button" onClick={() => setNotice('')} aria-label="Закрыть уведомление"><X size={14} /></button></div>}
-    <form className="hr-add-employee-form" onSubmit={complete}>
-      <FormSection step="1" title="Персональная информация" description="Личные и контактные данные" icon={<UserRound size={18} />}>
-        <Field name="lastName" label="Фамилия" autoComplete="family-name" register={register} errors={errors} required />
-        <Field name="firstName" label="Имя" autoComplete="given-name" register={register} errors={errors} required />
-        <Field name="middleName" label="Отчество" autoComplete="additional-name" register={register} errors={errors} />
-        <Field name="iin" label="ИИН" inputMode="numeric" maxLength={12} placeholder="12 цифр" register={register} errors={errors} required />
-        <Field name="birthDate" label="Дата рождения" type="date" register={register} errors={errors} required />
-        <SelectField name="gender" label="Пол" options={genders} register={register} errors={errors} required />
-        <Field name="citizenship" label="Гражданство" register={register} errors={errors} required />
-        <SelectField name="maritalStatus" label="Семейное положение" options={maritalStatuses} register={register} errors={errors} required />
-        <Field name="personalPhone" label="Номер телефона" type="tel" autoComplete="tel" placeholder="+7 700 000 00 00" register={register} errors={errors} required />
-        <Field name="personalEmail" label="Email" type="email" autoComplete="email" placeholder="name@example.com" register={register} errors={errors} required />
-        <Field name="address" label="Адрес проживания" autoComplete="street-address" register={register} errors={errors} required />
-        <SelectField name="identityDocumentType" label="Тип документа" options={identityDocumentTypes} register={register} errors={errors} required />
-        <Field name="identityDocumentNumber" label="Номер документа" register={register} errors={errors} required />
-      </FormSection>
 
-      <FormSection step="2" title="Предлагаемая занятость" description="Должность и условия работы" icon={<BriefcaseBusiness size={18} />}>
-        <SelectField name="department" label="Департамент" options={departments} register={register} errors={errors} required />
-        <SelectField name="position" label="Должность" options={positions} register={register} errors={errors} required />
-        <SelectField name="employmentType" label="Вид занятости" options={employmentTypes} register={register} errors={errors} required />
-        <SelectField name="workArrangement" label="Формат работы" options={workArrangements} register={register} errors={errors} required />
-        <SelectField name="workplace" label="Рабочее место (город)" options={workplaces} register={register} errors={errors} required />
-        <Field name="startDate" label="Дата выхода на работу" type="date" register={register} errors={errors} required />
-        <Field name="probationMonths" label="Испытательный срок" type="number" min={0} max={6} hint="В месяцах, по умолчанию — 0" register={register} errors={errors} required />
-        <SelectField name="schedule" label="График работы" options={workSchedules} register={register} errors={errors} required />
-        <SelectField name="hiringReason" label="Основание" options={hiringReasons} register={register} errors={errors} required />
-      </FormSection>
+    <form id="employee-registration-wizard" className="hr-registration-wizard" onSubmit={complete}>
+      <ol className="hr-registration-timeline" aria-label="Этапы регистрации сотрудника">
+        {registrationSteps.map((step, index) => {
+          const state = index < activeStep ? 'done' : index === activeStep ? 'active' : index <= highestStep ? 'available' : 'upcoming';
+          return <li className={state} key={step.shortTitle}>
+            <button type="button" onClick={() => goToStep(index)} disabled={index > highestStep} aria-current={index === activeStep ? 'step' : undefined}>
+              <span>{index < activeStep ? <Check size={17} /> : index + 1}</span>
+              <div><strong>{step.shortTitle}</strong><small>{index === activeStep ? 'Заполняется' : index < activeStep ? 'Готово' : 'Ожидает'}</small></div>
+            </button>
+          </li>;
+        })}
+      </ol>
 
-      <FormSection step="3" title="Образование" description="Образование и опыт работы" icon={<GraduationCap size={18} />}>
-        <SelectField name="educationLevel" label="Уровень образования" options={educationLevels} register={register} errors={errors} required />
-        <Field name="institution" label="Вуз / учебное заведение" register={register} errors={errors} required />
-        <Field name="specialization" label="Специальность" register={register} errors={errors} required />
-        <Field name="totalExperience" label="Опыт работы" placeholder="Например, 3 года 6 месяцев" register={register} errors={errors} required />
-      </FormSection>
+      <section className="hr-registration-stage" aria-labelledby={`registration-step-${activeStep}`}>
+        <header>
+          <span className="hr-registration-stage-icon">{currentStep.icon}</span>
+          <div><small>ЭТАП {activeStep + 1} ИЗ 4</small><h2 id={`registration-step-${activeStep}`}>{currentStep.title}</h2><p>{currentStep.description}</p></div>
+          <b>{String(activeStep + 1).padStart(2, '0')}</b>
+        </header>
 
-      <Section title="4. Вложения" meta="PDF, DOC, DOCX, JPG, PNG · до 10 МБ" className="hr-hiring-section hr-documents-section">
-        <div className="hr-section-icon" aria-hidden="true"><Paperclip size={18} /></div>
-        <div className="hr-document-grid">
-          {documentUpload('Удостоверение личности', 'Документ, удостоверяющий личность', 'Удостоверение, паспорт или вид на жительство', true)}
-          {documentUpload('Диплом', 'Диплом об образовании', diplomaRequired ? 'Обязателен для выбранного уровня образования' : 'Не требуется для среднего общего образования', diplomaRequired)}
+        <div className="hr-registration-stage-body">
+          {activeStep === 0 && <div className="field-grid hr-add-employee-fields">
+            <Field name="lastName" label="Фамилия" autoComplete="family-name" register={register} errors={errors} required />
+            <Field name="firstName" label="Имя" autoComplete="given-name" register={register} errors={errors} required />
+            <Field name="middleName" label="Отчество" autoComplete="additional-name" register={register} errors={errors} />
+            <Field name="iin" label="ИИН" inputMode="numeric" maxLength={12} placeholder="12 цифр" register={register} errors={errors} required />
+            <Field name="birthDate" label="Дата рождения" type="date" register={register} errors={errors} required />
+            <SelectField name="gender" label="Пол" options={genders} register={register} errors={errors} required />
+            <Field name="citizenship" label="Гражданство" register={register} errors={errors} required />
+            <SelectField name="maritalStatus" label="Семейное положение" options={maritalStatuses} register={register} errors={errors} required />
+            <Field name="personalPhone" label="Номер телефона" type="tel" autoComplete="tel" placeholder="+7 700 000 00 00" register={register} errors={errors} required />
+            <Field name="personalEmail" label="Email" type="email" autoComplete="email" placeholder="name@example.com" register={register} errors={errors} required />
+            <Field name="address" label="Адрес проживания" autoComplete="street-address" register={register} errors={errors} required />
+            <SelectField name="identityDocumentType" label="Тип документа" options={identityDocumentTypes} register={register} errors={errors} required />
+            <Field name="identityDocumentNumber" label="Номер документа" register={register} errors={errors} required />
+          </div>}
+
+          {activeStep === 1 && <div className="field-grid hr-add-employee-fields">
+            <SelectField name="department" label="Департамент" options={departments} register={register} errors={errors} required />
+            <SelectField name="position" label="Должность" options={positions} register={register} errors={errors} required />
+            <SelectField name="employmentType" label="Вид занятости" options={employmentTypes} register={register} errors={errors} required />
+            <SelectField name="workArrangement" label="Формат работы" options={workArrangements} register={register} errors={errors} required />
+            <SelectField name="workplace" label="Рабочее место (город)" options={workplaces} register={register} errors={errors} required />
+            <Field name="startDate" label="Дата выхода на работу" type="date" register={register} errors={errors} required />
+            <Field name="probationMonths" label="Испытательный срок" type="number" min={0} max={6} hint="В месяцах, по умолчанию — 0" register={register} errors={errors} required />
+            <SelectField name="schedule" label="График работы" options={workSchedules} register={register} errors={errors} required />
+            <SelectField name="hiringReason" label="Основание" options={hiringReasons} register={register} errors={errors} required />
+          </div>}
+
+          {activeStep === 2 && <div className="field-grid hr-add-employee-fields hr-education-fields">
+            <SelectField name="educationLevel" label="Уровень образования" options={educationLevels} register={register} errors={errors} required />
+            <Field name="institution" label="Вуз / учебное заведение" register={register} errors={errors} required />
+            <Field name="specialization" label="Специальность" register={register} errors={errors} required />
+            <Field name="totalExperience" label="Опыт работы" placeholder="Например, 3 года 6 месяцев" register={register} errors={errors} required />
+          </div>}
+
+          {activeStep === 3 && <div className="hr-registration-final-step">
+            <div className="hr-document-grid">
+              {documentUpload('Удостоверение личности', 'Документ, удостоверяющий личность', 'Удостоверение, паспорт или вид на жительство', true)}
+              {documentUpload('Диплом', 'Диплом об образовании', diplomaRequired ? 'Обязателен для выбранного уровня образования' : 'Не требуется для среднего общего образования', diplomaRequired)}
+            </div>
+            {attachmentError && <div className="hr-attachment-error" role="alert">{attachmentError}</div>}
+            <aside className="hr-registration-review">
+              <header><span><CheckCircle2 size={18} /></span><div><strong>Проверьте перед завершением</strong><small>Краткая сводка по заполненной карточке</small></div></header>
+              <dl>
+                <div><dt>Кандидат</dt><dd>{candidateName}</dd></div>
+                <div><dt>ИИН</dt><dd>{values.iin || 'Не указан'}</dd></div>
+                <div><dt>Должность</dt><dd>{values.position || 'Не выбрана'}</dd></div>
+                <div><dt>Департамент</dt><dd>{values.department || 'Не выбран'}</dd></div>
+                <div><dt>Дата выхода</dt><dd>{values.startDate || 'Не указана'}</dd></div>
+                <div><dt>Документы</dt><dd>{attachments.length ? `${attachments.length} файл(а)` : 'Не загружены'}</dd></div>
+              </dl>
+            </aside>
+          </div>}
         </div>
-        {attachmentError && <div className="hr-attachment-error" role="alert">{attachmentError}</div>}
-      </Section>
 
-      <div className="hr-add-employee-actions"><span>{isDirty ? 'Есть несохранённые изменения' : 'Черновик сохранён'} · PDF пока не формируется</span><button type="button" className="secondary-button" onClick={() => setConfirmClear(true)}><RotateCcw size={16} />Очистить</button><button type="button" className="secondary-button" onClick={saveDraft}><Save size={16} />Сохранить черновик</button><button type="submit" className="primary-button"><CheckCircle2 size={16} />Завершить заполнение</button></div>
+        <footer className="hr-registration-actions">
+          <div className="hr-registration-save-state"><i className={isDirty ? 'dirty' : ''} /><span>{isDirty ? 'Есть несохранённые изменения' : 'Черновик сохранён'}<small>Можно вернуться к заполнению позже</small></span></div>
+          <div className="hr-registration-secondary-actions"><button type="button" className="text-button" onClick={() => setConfirmClear(true)}><RotateCcw size={15} />Очистить</button><button type="button" className="secondary-button" onClick={saveDraft}><Save size={16} />Сохранить</button></div>
+          <div className="hr-registration-navigation">
+            {activeStep > 0 && <button type="button" className="secondary-button" onClick={() => { setActiveStep((step) => step - 1); scrollToWizard(); }}><ChevronLeft size={17} />Назад</button>}
+            {activeStep < 3 ? <button type="button" className="primary-button" onClick={goNext}>Продолжить<ArrowRight size={17} /></button> : <button type="submit" className="primary-button"><CheckCircle2 size={17} />Завершить заполнение</button>}
+          </div>
+        </footer>
+      </section>
     </form>
 
     {confirmClear && <div className="dialog-backdrop"><section className="dialog hr-confirm-dialog" role="dialog" aria-modal="true" aria-label="Очистить форму"><header><span>Очистить форму?</span><button className="icon-button" onClick={() => setConfirmClear(false)} aria-label="Закрыть"><X size={18} /></button></header><p>Все введённые данные, вложения и локальный черновик будут удалены.</p><footer><button className="secondary-button" onClick={() => setConfirmClear(false)}>Отмена</button><button className="primary-button" onClick={clearForm}>Очистить</button></footer></section></div>}

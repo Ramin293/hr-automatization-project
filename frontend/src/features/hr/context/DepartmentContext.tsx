@@ -10,7 +10,7 @@ const DepartmentContext = createContext<DepartmentContextValue>({ departmentId: 
 
 const hrPages: Array<[RegExp, string]> = [
   [/\/employees\/[^/]+$/, 'Профиль сотрудника'], [/\/employees$/, 'Сотрудники'],
-  [/\/hiring\/add-employee$/, 'Добавить сотрудника'], [/\/leave$/, 'Отпуска'], [/\/calendar$/, 'Календарь'],
+  [/\/hiring\/add-employee$/, 'Регистрация сотрудника'], [/\/leave$/, 'Отпуска'], [/\/calendar$/, 'Календарь'],
   [/\/sick-leave$/, 'Больничные'], [/\/business-trips$/, 'Командировки'],
   [/\/absence-calendar$/, 'Календарь отсутствий'], [/\/onboarding$/, 'Адаптация'],
   [/\/probation$/, 'Испытательный срок'], [/\/terminations$/, 'Увольнения'],
@@ -27,7 +27,7 @@ export function DepartmentProvider({ children }: PropsWithChildren) {
     const isHrWorkspace = profile.departmentCode === 'HR';
     const isAddEmployee = pathname.endsWith('/employees') && new URLSearchParams(search).get('add') === 'true';
     const pageTitle = isAddEmployee
-      ? 'Добавление сотрудника'
+      ? 'Регистрация сотрудника'
       : isHrRoute
       ? hrPages.find(([pattern]) => pattern.test(pathname))?.[1] ?? 'Главная'
       : pathname.includes('incoming') ? (isHrWorkspace ? 'Входящие сообщения' : 'Входящая корреспонденция')
