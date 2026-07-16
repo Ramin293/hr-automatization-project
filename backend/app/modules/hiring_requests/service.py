@@ -557,6 +557,7 @@ class HiringRequestService:
             dispatch.status = "acknowledged"
             dispatch.acknowledged_at = utc_now()
             dispatch.revision += 1
+            await session.flush()
             pending = int(
                 await session.scalar(
                     select(func.count())

@@ -1,4 +1,5 @@
 import { ApiClient } from '../../../repositories/apiRepositories';
+import type { PersonaId } from '../../../shared/types';
 import type { AddEmployeeFormValues } from '../add-employee/schema';
 
 export const DEMO_ORGANIZATION_ID = '63f3d186-4702-561f-b6f3-c410df730708';
@@ -17,12 +18,55 @@ export type HiringRequest = {
 
 const api = new ApiClient();
 
+const personaToHiringDevUser: Record<string, string> = {
+  'hr-specialist': 'hr.initiator',
+  'hr-initiator': 'hr.initiator',
+  'hr-director': 'hr.director',
+  'economic-director': 'economic.director',
+  'commission-reviewer': 'commission',
+  'legal-reviewer': 'legal',
+  'board-chairman': 'chairman',
+  accountant: 'accountant',
+  'it-specialist': 'it.specialist'
+};
+
+export type HiringRequestScope = 'mine' | 'inbox' | 'received' | undefined;
+
+export const hiringStatusLabels: Record<string, string> = {
+  draft: 'Черновик', pdf_generated: 'PDF готов', under_review: 'На согласовании',
+  returned: 'Возвращено', rejected: 'Отклонено', final_approved: 'Финально согласовано',
+  dispatched: 'Отправлено', partially_acknowledged: 'Получено частично', completed: 'Завершено'
+};
+
+const personaApprovalStage: Partial<Record<PersonaId, string>> = {
+  'hr-director': 'hr_director',
+  'economic-director': 'economic_director',
+  'commission-reviewer': 'competition_commission',
+  'legal-reviewer': 'legal_department',
+  'board-chairman': 'chairman'
+};
+
+const personaDispatchRecipient: Partial<Record<PersonaId, 'accounting' | 'it'>> = {
+  accountant: 'accounting',
+  'it-specialist': 'it'
+};
+
+export function canPersonaApproveRequest(persona: PersonaId, request: HiringRequest) {
+  return request.status === 'under_review' && personaApprovalStage[persona] === request.currentStageCode;
+}
+
+export function canPersonaAcknowledgeRequest(persona: PersonaId, request: HiringRequest) {
+  const recipient = personaDispatchRecipient[persona];
+  return Boolean(recipient && ['dispatched', 'partially_acknowledged'].includes(request.status)
+    && request.dispatches.some((dispatch) => dispatch.recipientType === recipient && dispatch.status !== 'acknowledged'));
+}
+
 function hiringDevUser() {
   try {
     const stored = JSON.parse(localStorage.getItem('ertis-developer-settings') ?? '{}') as { state?: { persona?: string } };
-    return stored.state?.persona === 'hr-specialist' ? 'hr.initiator' : undefined;
+    return personaToHiringDevUser[stored.state?.persona ?? ''] ?? 'hr.initiator';
   } catch {
-    return undefined;
+    return 'hr.initiator';
   }
 }
 
@@ -65,7 +109,7 @@ function payload(values: AddEmployeeFormValues) {
 export const hiringRequestsApi = {
   create: (values: AddEmployeeFormValues) => api.post<HiringRequest>('/hiring-requests', payload(values), hiringDevUser()),
   update: (id: string, revision: number, values: AddEmployeeFormValues) => api.patch<HiringRequest>(`/hiring-requests/${id}`, { ...payload(values), revision }, hiringDevUser()),
-  list: (scope = 'mine') => api.get<HiringRequest[]>(`/hiring-requests?organizationId=${DEMO_ORGANIZATION_ID}&scope=${scope}`, hiringDevUser()),
+  list: (scope: HiringRequestScope = 'mine') => api.get<HiringRequest[]>(`/hiring-requests?organizationId=${DEMO_ORGANIZATION_ID}${scope ? `&scope=${scope}` : ''}`, hiringDevUser()),
   get: (id: string) => api.get<HiringRequest>(`/hiring-requests/${id}?organizationId=${DEMO_ORGANIZATION_ID}`, hiringDevUser()),
   upload: (id: string, category: 'identity' | 'diploma', file: File) => {
     const data = new FormData(); data.append('organizationId', DEMO_ORGANIZATION_ID); data.append('category', category); data.append('file', file);

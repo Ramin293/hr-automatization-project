@@ -16,7 +16,7 @@ describe('ApiClient runtime routing', () => {
     await new ApiClient().get('/operations/dashboard');
 
     expect(fetchMock).toHaveBeenCalledWith('/api/v1/operations/dashboard', expect.objectContaining({
-      headers: expect.objectContaining({ 'X-Dev-User': 'admin' })
+      headers: expect.objectContaining({ 'X-Dev-User': 'hr' })
     }));
   });
 

@@ -4,6 +4,7 @@ import { getPermissions } from '../../../shared/permissions';
 import { getPersonaProfile, type DepartmentCode } from '../../../shared/personas';
 import { useDeveloperStore } from '../../../shared/store';
 import type { PersonaId } from '../../../shared/types';
+import { UNIFIED_HR_WORKSPACE } from '../../../shared/unifiedHrWorkspace';
 
 type DepartmentContextValue = { departmentId: string; departmentCode: DepartmentCode; departmentName: string; pageTitle: string; role: PersonaId; permissions: string[]; isHrWorkspace: boolean };
 const DepartmentContext = createContext<DepartmentContextValue>({ departmentId: 'department-secretariat', departmentCode: 'SECRETARIAT', departmentName: 'Секретариат', pageTitle: 'Главная', role: 'secretary', permissions: [], isHrWorkspace: false });
@@ -24,7 +25,7 @@ export function DepartmentProvider({ children }: PropsWithChildren) {
   const value = useMemo<DepartmentContextValue>(() => {
     const profile = getPersonaProfile(persona);
     const isHrRoute = pathname === '/hr' || pathname.startsWith('/hr/') || pathname === '/departments/hr' || pathname.startsWith('/departments/hr/');
-    const isHrWorkspace = profile.departmentCode === 'HR';
+    const isHrWorkspace = UNIFIED_HR_WORKSPACE || profile.departmentCode === 'HR';
     const isAddEmployee = pathname.endsWith('/employees') && new URLSearchParams(search).get('add') === 'true';
     const pageTitle = isAddEmployee
       ? 'Регистрация сотрудника'
@@ -41,9 +42,9 @@ export function DepartmentProvider({ children }: PropsWithChildren) {
     return {
       role: persona,
       permissions: getPermissions(persona) as string[],
-      departmentId: profile.departmentId,
-      departmentCode: isHrRoute ? 'HR' : profile.departmentCode,
-      departmentName: isHrRoute ? 'Департамент документооборота и управления персоналом' : profile.departmentName,
+      departmentId: UNIFIED_HR_WORKSPACE ? 'department-hr' : profile.departmentId,
+      departmentCode: UNIFIED_HR_WORKSPACE || isHrRoute ? 'HR' : profile.departmentCode,
+      departmentName: UNIFIED_HR_WORKSPACE || isHrRoute ? 'Департамент документооборота и управления персоналом' : profile.departmentName,
       pageTitle,
       isHrWorkspace
     };

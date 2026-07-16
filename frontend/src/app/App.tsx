@@ -53,7 +53,7 @@ export function App() {
         <Route path="hr/sick-leave" element={<Suspense fallback={<LoadingState />}><HrPlannedPage kind="sick" /></Suspense>} />
         <Route path="hr/terminations" element={<Suspense fallback={<LoadingState />}><HrPlannedPage kind="terminations" /></Suspense>} />
         <Route path="hr/documents" element={<Suspense fallback={<LoadingState />}><HrPlannedPage kind="documents" /></Suspense>} />
-        <Route path="hr/approvals" element={<Suspense fallback={<LoadingState />}><HrPlannedPage kind="approvals" /></Suspense>} />
+        <Route path="hr/approvals" element={<Suspense fallback={<LoadingState />}><HiringRequestsPage /></Suspense>} />
         <Route path="hr/hiring/add-employee" element={<Navigate to="/hr/employees?add=true" replace />} />
         <Route path="hiring/requests" element={<Suspense fallback={<LoadingState />}><HiringRequestsPage /></Suspense>} />
         <Route path="hiring/inbox" element={<Suspense fallback={<LoadingState />}><HiringRequestsPage /></Suspense>} />

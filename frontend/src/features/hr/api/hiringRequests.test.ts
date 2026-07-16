@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { hiringRequestsApi } from './hiringRequests';
+import { canPersonaAcknowledgeRequest, canPersonaApproveRequest, hiringRequestsApi, type HiringRequest } from './hiringRequests';
 
 describe('hiring request development identity', () => {
   afterEach(() => {
@@ -35,5 +35,41 @@ describe('hiring request development identity', () => {
     expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/hiring-requests'), expect.objectContaining({
       headers: expect.objectContaining({ 'X-Dev-User': 'hr.director' })
     }));
+  });
+
+  it('uses the hiring initiator for a generic unified-workspace persona', async () => {
+    localStorage.setItem('ertis-developer-settings', JSON.stringify({ state: { persona: 'secretary' } }));
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: [], meta: { requestId: 'test-request' } })
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await hiringRequestsApi.list();
+
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/hiring-requests'), expect.objectContaining({
+      headers: expect.objectContaining({ 'X-Dev-User': 'hr.initiator' })
+    }));
+  });
+
+  it('only enables a decision for the persona assigned to the current backend stage', () => {
+    const request = { status: 'under_review', currentStageCode: 'economic_director' } as HiringRequest;
+
+    expect(canPersonaApproveRequest('economic-director', request)).toBe(true);
+    expect(canPersonaApproveRequest('hr-director', request)).toBe(false);
+    expect(canPersonaApproveRequest('secretary', request)).toBe(false);
+  });
+
+  it('only enables receipt confirmation for the pending assigned recipient', () => {
+    const request = {
+      status: 'partially_acknowledged',
+      dispatches: [
+        { recipientType: 'accounting', status: 'acknowledged' },
+        { recipientType: 'it', status: 'assigned' }
+      ]
+    } as HiringRequest;
+
+    expect(canPersonaAcknowledgeRequest('accountant', request)).toBe(false);
+    expect(canPersonaAcknowledgeRequest('it-specialist', request)).toBe(true);
   });
 });

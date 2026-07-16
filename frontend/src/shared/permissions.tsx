@@ -1,6 +1,7 @@
 import type { PropsWithChildren } from 'react';
 import { useDeveloperStore } from './store';
 import type { PersonaId } from './types';
+import { UNIFIED_HR_WORKSPACE } from './unifiedHrWorkspace';
 
 export type Permission =
   | 'correspondence.read' | 'correspondence.create' | 'correspondence.register' | 'correspondence.resolve'
@@ -25,13 +26,22 @@ const matrix: Record<PersonaId, Permission[]> = {
   'it-specialist': ['organization.read', 'hiring.receive']
 };
 
+const unifiedHrPermissions: Permission[] = [
+  'hr.read', 'hr.employees.read', 'hr.sensitive.read', 'hr.leave.create',
+  'hr.leave.review', 'hr.messages.read'
+];
+
 export function usePermission(permission: Permission) {
   const persona = useDeveloperStore((state) => state.persona);
-  return matrix[persona].includes(permission);
+  return getPermissions(persona).includes(permission);
 }
 
 export function PermissionGate({ permission, children, fallback = null }: PropsWithChildren<{ permission: Permission; fallback?: React.ReactNode }>) {
   return usePermission(permission) ? children : fallback;
 }
 
-export function getPermissions(persona: PersonaId) { return matrix[persona]; }
+export function getPermissions(persona: PersonaId) {
+  return UNIFIED_HR_WORKSPACE
+    ? Array.from(new Set([...matrix[persona], ...unifiedHrPermissions]))
+    : matrix[persona];
+}

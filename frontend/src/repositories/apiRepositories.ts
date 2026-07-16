@@ -1,5 +1,7 @@
 /// <reference types="vite/client" />
 
+import { UNIFIED_HR_DEV_USER, UNIFIED_HR_WORKSPACE } from '../shared/unifiedHrWorkspace';
+
 type Envelope<T> = { data: T; meta: { requestId: string } };
 type ErrorEnvelope = { error?: { code?: string; message?: string; requestId?: string } };
 
@@ -15,6 +17,7 @@ const personaToDevUser: Record<string, string> = {
 };
 
 function currentDevUser() {
+  if (UNIFIED_HR_WORKSPACE) return UNIFIED_HR_DEV_USER;
   try {
     const stored = JSON.parse(localStorage.getItem('ertis-developer-settings') ?? '{}') as { state?: { persona?: string } };
     return personaToDevUser[stored.state?.persona ?? ''] ?? 'admin';
