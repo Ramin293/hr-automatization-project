@@ -72,6 +72,11 @@ PERMISSION_CATALOG: tuple[PermissionDefinition, ...] = (
         "Run the terminate business function: end employment and active assignments.",
     ),
     PermissionDefinition(
+        "employees.lifecycle.override",
+        "Override formal employee lifecycle",
+        "Emergency system-administrator-only bypass of formal hiring or termination workflows.",
+    ),
+    PermissionDefinition(
         "employees.transfer",
         "Transfer employees",
         "Run the transfer business function: move an employee to another staffing slot.",
@@ -83,6 +88,215 @@ PERMISSION_CATALOG: tuple[PermissionDefinition, ...] = (
         "roles.manage", "Manage roles", "Create roles and maintain role assignments."
     ),
     PermissionDefinition("audit.read", "Read audit history", "View immutable audit events."),
+    PermissionDefinition(
+        "workflow.definition.read",
+        "Read workflow definitions",
+        "View process definitions and versions.",
+    ),
+    PermissionDefinition(
+        "workflow.definition.manage",
+        "Manage workflow definitions",
+        "Create and edit process definition drafts.",
+    ),
+    PermissionDefinition(
+        "workflow.definition.review",
+        "Review workflow definitions",
+        "Submit or return workflow definition drafts.",
+    ),
+    PermissionDefinition(
+        "workflow.definition.publish",
+        "Publish workflow definitions",
+        "Publish validated workflow definition versions.",
+    ),
+    PermissionDefinition(
+        "workflow.instance.read",
+        "Read workflow instances",
+        "View authorized process instances and history.",
+    ),
+    PermissionDefinition(
+        "workflow.task.read", "Read workflow tasks", "View workflow tasks assigned to the actor."
+    ),
+    PermissionDefinition(
+        "workflow.task.act",
+        "Act on workflow tasks",
+        "Complete, approve, return, or reject assigned workflow tasks.",
+    ),
+    PermissionDefinition(
+        "workflow.task.reassign",
+        "Reassign workflow tasks",
+        "Reassign tasks through authorized delegation.",
+    ),
+    PermissionDefinition(
+        "documents.read", "Read documents", "View authorized document records and safe metadata."
+    ),
+    PermissionDefinition(
+        "documents.read_sensitive",
+        "Read sensitive documents",
+        "Read confidential document content.",
+    ),
+    PermissionDefinition(
+        "documents.create", "Create documents", "Create document records and checklist items."
+    ),
+    PermissionDefinition(
+        "documents.upload", "Upload documents", "Upload validated document versions."
+    ),
+    PermissionDefinition(
+        "documents.generate", "Generate documents", "Generate documents from published templates."
+    ),
+    PermissionDefinition("documents.review", "Review documents", "Approve or reject documents."),
+    PermissionDefinition(
+        "documents.sign_request",
+        "Request document signatures",
+        "Request or manually confirm development signatures.",
+    ),
+    PermissionDefinition(
+        "documents.register", "Register documents", "Record controlled document registration."
+    ),
+    PermissionDefinition(
+        "documents.acknowledge", "Acknowledge documents", "Acknowledge assigned document versions."
+    ),
+    PermissionDefinition(
+        "documents.acknowledge_assign",
+        "Assign document acknowledgements",
+        "Assign immutable document versions for employee acknowledgement.",
+    ),
+    PermissionDefinition(
+        "documents.archive", "Archive documents", "Archive or void authorized documents."
+    ),
+    PermissionDefinition(
+        "recruitment.request.create",
+        "Create recruitment requests",
+        "Create recruitment requests in authorized units.",
+    ),
+    PermissionDefinition(
+        "recruitment.request.read",
+        "Read recruitment requests",
+        "Read recruitment requests in scope.",
+    ),
+    PermissionDefinition(
+        "recruitment.request.review_hr",
+        "HR recruitment review",
+        "Perform HR completeness decisions.",
+    ),
+    PermissionDefinition(
+        "recruitment.request.review_staffing",
+        "Staffing recruitment review",
+        "Perform staffing and finance decisions.",
+    ),
+    PermissionDefinition(
+        "recruitment.vacancy.manage", "Manage vacancies", "Create and maintain approved vacancies."
+    ),
+    PermissionDefinition(
+        "recruitment.vacancy.publish",
+        "Publish vacancies",
+        "Record internal and external vacancy publication.",
+    ),
+    PermissionDefinition(
+        "recruitment.candidate.read",
+        "Read candidates",
+        "Read non-sensitive candidate data in scope.",
+    ),
+    PermissionDefinition(
+        "recruitment.candidate.read_sensitive",
+        "Read sensitive candidates",
+        "Read protected candidate fields.",
+    ),
+    PermissionDefinition(
+        "recruitment.candidate.manage",
+        "Manage candidates",
+        "Create and update candidate records and applications.",
+    ),
+    PermissionDefinition(
+        "recruitment.screen", "Screen candidates", "Record candidate screening decisions."
+    ),
+    PermissionDefinition(
+        "recruitment.interview.manage", "Manage interviews", "Schedule interviews and participants."
+    ),
+    PermissionDefinition(
+        "recruitment.interview.evaluate",
+        "Evaluate interviews",
+        "Submit immutable interview evaluations.",
+    ),
+    PermissionDefinition(
+        "recruitment.commission.manage",
+        "Manage commissions",
+        "Configure recruitment commission instances.",
+    ),
+    PermissionDefinition(
+        "recruitment.commission.decide",
+        "Record commission decisions",
+        "Record quorum-backed commission decisions.",
+    ),
+    PermissionDefinition(
+        "recruitment.offer.manage",
+        "Manage job offers",
+        "Prepare and record candidate offer decisions.",
+    ),
+    PermissionDefinition(
+        "recruitment.hiring.manage",
+        "Manage hiring cases",
+        "Manage formal hiring and employee conversion.",
+    ),
+    PermissionDefinition(
+        "termination.initiate_self",
+        "Initiate own termination",
+        "Initiate a termination case for the actor.",
+    ),
+    PermissionDefinition(
+        "termination.initiate_unit",
+        "Initiate unit termination",
+        "Initiate termination in authorized units.",
+    ),
+    PermissionDefinition(
+        "termination.read_self", "Read own termination", "Read the actor's termination case."
+    ),
+    PermissionDefinition(
+        "termination.read_unit",
+        "Read unit termination",
+        "Read termination cases in authorized units.",
+    ),
+    PermissionDefinition(
+        "termination.read_all", "Read all termination", "Read organization termination cases."
+    ),
+    PermissionDefinition(
+        "termination.review_hr",
+        "Review termination as HR",
+        "Perform HR completeness and date review.",
+    ),
+    PermissionDefinition(
+        "termination.review_legal",
+        "Review termination as legal",
+        "Perform configured legal review.",
+    ),
+    PermissionDefinition(
+        "termination.sign", "Sign termination documents", "Act as configured termination signatory."
+    ),
+    PermissionDefinition(
+        "termination.handover", "Confirm handover", "Complete manager handover tasks."
+    ),
+    PermissionDefinition(
+        "termination.assets.confirm", "Confirm asset return", "Complete asset return tasks."
+    ),
+    PermissionDefinition(
+        "termination.access.confirm",
+        "Confirm access revocation",
+        "Complete IT access-revocation tasks.",
+    ),
+    PermissionDefinition(
+        "termination.settlement.confirm",
+        "Confirm settlement",
+        "Complete accounting settlement tasks.",
+    ),
+    PermissionDefinition(
+        "termination.exit_interview.manage",
+        "Manage exit interviews",
+        "Complete restricted exit-interview tasks.",
+    ),
+    PermissionDefinition(
+        "termination.complete",
+        "Complete termination",
+        "Finalize an effective and fully offboarded termination case.",
+    ),
 )
 
 REQUIRED_PERMISSION_CODES: frozenset[str] = frozenset(item.code for item in PERMISSION_CATALOG)

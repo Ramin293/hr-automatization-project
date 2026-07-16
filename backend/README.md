@@ -1,4 +1,4 @@
-# SPK Corporate Backend — Module 1
+# SPK Corporate Backend — Modules 1 and 2
 
 The backend is a single deployable FastAPI application divided into business modules. Domain
 and application code is framework-independent; FastAPI and SQLAlchemy are outer adapters.
@@ -22,6 +22,9 @@ Copy `.env.example` to `.env`. All settings use the `SPK_` prefix. Important set
 | `SPK_OIDC_AUDIENCE` | Expected API audience |
 | `SPK_OIDC_JWKS_URL` | Provider JWKS URL |
 | `SPK_SENSITIVE_DATA_KEY` | Fernet key used to encrypt IIN at rest |
+| `SPK_DOCUMENT_STORAGE_BACKEND` | `local` or `s3` document object storage adapter |
+| `SPK_DOCUMENT_STORAGE_ROOT` | Local object-storage root for development/test |
+| `SPK_DOCUMENT_MAX_SIZE_BYTES` | Global streaming upload ceiling |
 
 Generate a development-only sensitive-data key in PowerShell:
 
@@ -64,12 +67,12 @@ python -m app.seed
 alembic current
 ```
 
-The seed is deterministic and safe to re-run. It creates the Module 1 permission catalog, demo
-roles, one demonstration organization, reference types, policies, a published structure, units,
-and staffing data. The director and employee personas are linked to deterministic employee records
-and current assignments. Their scoped operational roles remain narrow; separate read-only,
-organization-scoped viewer assignments enable organization navigation. Names are data only;
-changing them cannot change authorization behavior.
+The seed is deterministic and safe to re-run. It creates Module 1 organization/staffing data and
+Module 2 permissions, published recruitment/hiring/termination routes, actor rules, versioned
+forms, document types/checklist configuration, evaluation criteria, commission rules, termination
+reasons, and publication channels. The director and employee personas remain linked to
+deterministic employee records and current assignments. Names are data only; changing them cannot
+change authorization behavior.
 
 Production startup runs migrations explicitly. The application never invokes `create_all`.
 
@@ -112,3 +115,4 @@ tests. Unit and API-contract tests do not require external services.
 - [Organization versioning](docs/ORGANIZATION_VERSIONING.md)
 - [Frontend integration](docs/FRONTEND_INTEGRATION.md)
 - [Future modules](docs/FUTURE_MODULES.md)
+- [Module 2 workflows and operations](docs/MODULE2_WORKFLOWS.md)

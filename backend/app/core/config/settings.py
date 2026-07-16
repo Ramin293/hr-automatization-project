@@ -50,6 +50,22 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     cors_origins: CsvList = Field(default_factory=lambda: ["http://localhost:5173"])
     frontend_dist_path: str | None = None
+    document_storage_backend: str = "local"
+    document_storage_root: str = ".spk-documents"
+    document_max_size_bytes: int = Field(default=20_971_520, gt=0)
+    document_allowed_mime_types: CsvList = Field(
+        default_factory=lambda: [
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "image/jpeg",
+            "image/png",
+        ]
+    )
+    s3_endpoint_url: str | None = None
+    s3_bucket: str | None = None
+    s3_access_key: SecretStr | None = None
+    s3_secret_key: SecretStr | None = None
+    s3_region: str = "us-east-1"
 
     dev_auth_enabled: bool = False
     dev_default_user: str = "admin"

@@ -1,0 +1,83 @@
+from __future__ import annotations
+
+from collections.abc import Mapping, Sequence
+from typing import Any, Protocol
+from uuid import UUID
+
+from app.modules.workflow.domain.entities import ConfigurationProblem
+
+WorkflowView = Mapping[str, Any]
+
+
+class WorkflowOperationsPort(Protocol):
+    async def require_organization(
+        self, resource: str, resource_id: UUID, organization_id: UUID
+    ) -> None: ...
+    async def list_definitions(self, organization_id: UUID) -> Sequence[WorkflowView]: ...
+    async def create_form_definition(
+        self, organization_id: UUID, actor_id: UUID, data: Mapping[str, Any]
+    ) -> WorkflowView: ...
+    async def create_form_draft(
+        self, form_id: UUID, actor_id: UUID, based_on_version_id: UUID | None
+    ) -> WorkflowView: ...
+    async def save_form_field(
+        self, version_id: UUID, actor_id: UUID, data: Mapping[str, Any]
+    ) -> WorkflowView: ...
+    async def publish_form_version(
+        self, version_id: UUID, actor_id: UUID, revision: int, reason: str
+    ) -> WorkflowView: ...
+    async def submit_form(
+        self, organization_id: UUID, actor_id: UUID, data: Mapping[str, Any]
+    ) -> WorkflowView: ...
+    async def create_definition(
+        self, organization_id: UUID, actor_id: UUID, data: Mapping[str, Any]
+    ) -> WorkflowView: ...
+    async def create_draft(
+        self, definition_id: UUID, actor_id: UUID, based_on_version_id: UUID | None, name: str
+    ) -> WorkflowView: ...
+    async def get_version(self, version_id: UUID) -> WorkflowView: ...
+    async def save_actor_rule(
+        self, version_id: UUID, actor_id: UUID, data: Mapping[str, Any]
+    ) -> WorkflowView: ...
+    async def save_step(
+        self, version_id: UUID, actor_id: UUID, data: Mapping[str, Any]
+    ) -> WorkflowView: ...
+    async def save_transition(
+        self, version_id: UUID, actor_id: UUID, data: Mapping[str, Any]
+    ) -> WorkflowView: ...
+    async def validate_version(
+        self, version_id: UUID, actor_id: UUID
+    ) -> tuple[ConfigurationProblem, ...]: ...
+    async def submit_review(
+        self, version_id: UUID, actor_id: UUID, revision: int, reason: str
+    ) -> WorkflowView: ...
+    async def return_draft(
+        self, version_id: UUID, actor_id: UUID, revision: int, reason: str
+    ) -> WorkflowView: ...
+    async def publish(
+        self, version_id: UUID, actor_id: UUID, revision: int, reason: str
+    ) -> WorkflowView: ...
+    async def compare_versions(self, left_id: UUID, right_id: UUID) -> WorkflowView: ...
+    async def start_instance(
+        self, organization_id: UUID, actor_id: UUID, data: Mapping[str, Any]
+    ) -> WorkflowView: ...
+    async def list_instances(
+        self, organization_id: UUID, offset: int, limit: int
+    ) -> tuple[Sequence[WorkflowView], int]: ...
+    async def get_instance(self, instance_id: UUID) -> WorkflowView: ...
+    async def history(self, instance_id: UUID) -> Sequence[WorkflowView]: ...
+    async def my_tasks(
+        self, user_id: UUID, offset: int, limit: int
+    ) -> tuple[Sequence[WorkflowView], int]: ...
+    async def act_task(
+        self,
+        task_id: UUID,
+        actor_id: UUID,
+        revision: int,
+        action: str,
+        comment: str | None,
+        idempotency_key: str,
+    ) -> WorkflowView: ...
+    async def reassign_task(
+        self, task_id: UUID, actor_id: UUID, revision: int, assigned_user_id: UUID, reason: str
+    ) -> WorkflowView: ...

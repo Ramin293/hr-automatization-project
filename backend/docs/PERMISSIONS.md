@@ -21,6 +21,7 @@ names can be changed without changing any authorization decision.
 | `employees.create` | Create employee drafts according to policy/scope |
 | `employees.edit` | Edit employee records in scope |
 | `employees.assign` | Start/end slot assignments in scope |
+| `employees.lifecycle.override` | Emergency direct hire/terminate override reserved for system administrators |
 | `delegations.manage` | Create/read/revoke bounded delegation grants |
 | `roles.manage` | Manage roles and temporal role assignments |
 | `audit.read` | Read immutable audit history in scope |
@@ -74,6 +75,29 @@ considered only when it is unrevoked, within its UTC interval, includes the requ
 and its scope reference covers the stored target. The delegator must possess delegable authority;
 a scoped actor may delegate only their own authority, and unit references follow stable identity
 across organization versions. A future policy can further restrict which permissions are delegable.
+
+## Module 2 permission families
+
+Module 2 adds stable workflow, document, recruitment/hiring and termination/offboarding permission
+families to the same catalog. The deterministic seed assigns them to functional demonstration
+roles. Workflow actor rules resolve permission holders through active temporal role assignments and
+authoritative organization scopes.
+
+- Workflow: definition read/manage/review/publish, instance/task read, task act/reassign.
+- Documents: read/sensitive read, create/upload/generate/review/sign/register, acknowledge,
+  acknowledgement assignment and archive.
+- Recruitment: request creation/read/reviews, vacancy management/publication, candidate normal and
+  sensitive access, screening, interviews/evaluations, commissions, offers and hiring.
+- Termination: initiate/read, HR/legal review, sign/register, task-specific handover/assets/IAM/
+  settlement/exit-interview permissions, schedule, complete and cancel.
+
+Path IDs never grant access. Each endpoint authorizes a stable permission and verifies the stored
+resource organization. Unit-sensitive operations use authoritative assignments/staffing units for
+scope evaluation rather than trusting request display data.
+
+Direct employee hire/terminate functions are not part of the normal HR or manager roles. Normal
+lifecycle changes must complete the formal hiring or termination case; the separate lifecycle
+override is an explicit system-administrator recovery capability.
 
 ## Frontend behavior
 

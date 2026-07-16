@@ -211,3 +211,38 @@ entity ID, and action. Results are reverse chronological. No API allows audit mu
 | `ASSIGNMENT_DATE_CONFLICT` | 409 | Assignment/slot dates conflict |
 | `DELEGATION_DATE_CONFLICT` | 409 | Invalid or duplicate delegation interval |
 | `SENSITIVE_DATA_FORBIDDEN` | 403 | Explicit sensitive-read permission absent |
+
+## Module 2 API groups
+
+All Module 2 mutating requests carry `organizationId`; updates/decisions also carry the current
+`revision`. The server resolves ownership and unit scope from PostgreSQL before acting on a path ID.
+
+### Workflow and forms
+
+- Route definition/draft, actor, step, transition, validation, review, return, publish and compare
+  APIs manage immutable published workflow versions.
+- Instance, history, assigned-task, idempotent task-action and delegation-backed reassignment APIs
+  operate the snapshotted runtime.
+- Form definition/draft/field/publication APIs manage declarative versioned forms;
+  `/workflow/form-submissions` accepts only a published version captured by the process snapshot.
+
+### Documents
+
+The `/documents` group exposes types, templates/versions, records/content versions, streaming
+upload/download, local template generation, signature status, development manual signature,
+registration, acknowledgements and checklists. Sensitive downloads require the dedicated permission.
+
+### Recruitment and hiring
+
+The `/recruitment` group exposes requests/reviews, vacancies/publications, consented candidates and
+retention anonymization, applications/screening, interviews/evaluations, commissions/quorum,
+offers/responses, formal hiring and onboarding. Hiring completion atomically creates the employee
+and assignment.
+
+### Termination and offboarding
+
+The `/terminations` group exposes initiation, HR/legal/signature decisions, order registration,
+offboarding task completion/waiver, effective scheduling, completion and safe cancellation.
+
+Module 2 adds the stable `PROCESS_*`, `DOCUMENT_*`, recruitment/hiring and `TERMINATION_*` error
+codes declared in `app/core/errors/codes.py`. Generated OpenAPI is authoritative for DTO fields.

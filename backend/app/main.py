@@ -1,4 +1,4 @@
-"""FastAPI composition root for the Module 1 modular monolith."""
+"""FastAPI composition root for the SPK modular monolith."""
 
 from __future__ import annotations
 
@@ -30,6 +30,7 @@ from app.modules.access_control.api.dependencies import (
     get_organization_scope_resolver,
 )
 from app.modules.access_control.application.ports import OrganizationScopeResolver
+from app.modules.documents.api import router as documents_router
 from app.modules.employees.api import (
     create_employee_router,
     employee_exception_handler,
@@ -64,6 +65,9 @@ from app.modules.organization.domain.errors import OrganizationError
 from app.modules.organization.infrastructure.scope_factory import (
     SessionFactoryOrganizationScopeResolver,
 )
+from app.modules.recruitment.api import router as recruitment_router
+from app.modules.termination.api import router as termination_router
+from app.modules.workflow.api import router as workflow_router
 from app.shared.api import DataResponse, ResponseMeta
 
 
@@ -235,8 +239,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         title=runtime.app_name,
         version="1.0.0",
         description=(
-            "Module 1 API for identity, scoped access, versioned organization structures, "
-            "staffing, employees, assignments, delegation, audit, and integration events."
+            "SPK API for identity, scoped access, organization and staffing, employees, "
+            "workflow, documents, recruitment, hiring, termination, audit, and outbox events."
         ),
         lifespan=lifespan,
     )
@@ -309,6 +313,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     application.include_router(organization_router, prefix=runtime.api_prefix)
     application.include_router(access_router, prefix=runtime.api_prefix)
     application.include_router(audit_router, prefix=runtime.api_prefix)
+    application.include_router(workflow_router, prefix=runtime.api_prefix)
+    application.include_router(documents_router, prefix=runtime.api_prefix)
+    application.include_router(recruitment_router, prefix=runtime.api_prefix)
+    application.include_router(termination_router, prefix=runtime.api_prefix)
     application.include_router(
         create_employee_router(
             employee_service_provider,
