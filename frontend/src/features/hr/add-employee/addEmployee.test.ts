@@ -5,7 +5,7 @@ import { addEmployeeSchema } from './schema';
 import { buildAttachmentList, buildEmployeeFullName, buildRequestText, createEmployeeRequestFilename, validateAttachment, type EmployeeAttachment } from './utils';
 
 const validValues = () => ({
-  ...addEmployeeDefaults, lastName: 'Садыкова', firstName: 'Алия', middleName: 'Ерлановна', iin: '900101300001', birthDate: '1990-01-01', gender: 'Женский', personalPhone: '+7 700 000 00 00', personalEmail: 'aliya@example.com', address: 'Павлодар', department: 'Департамент управления персоналом', position: 'HR специалист', manager: 'Сауле Бекенова', startDate: '2026-08-01', responsibilities: 'Кадровое администрирование', justification: 'Усиление команды', institution: 'Торайгыров университет', specialization: 'Управление персоналом'
+  ...addEmployeeDefaults, lastName: 'Садыкова', firstName: 'Алия', middleName: 'Ерлановна', iin: '900101300001', birthDate: '1990-01-01', gender: 'Женский', personalPhone: '+7 700 000 00 00', personalEmail: 'aliya@example.com', address: 'Павлодар', maritalStatus: 'Не состоит в браке', identityDocumentNumber: '012345678', department: 'Департамент управления персоналом', position: 'HR специалист', manager: 'Сауле Бекенова', startDate: '2026-08-01', responsibilities: 'Кадровое администрирование', justification: 'Усиление команды', institution: 'Торайгыров университет', specialization: 'Управление персоналом', totalExperience: '3 года'
 });
 
 describe('Add Employee frontend domain', () => {

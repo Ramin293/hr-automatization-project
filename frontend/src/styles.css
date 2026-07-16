@@ -495,18 +495,44 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
 .hr-balance-detail dd { font-family: var(--font-mono); font-size: 8px; margin: 0; }
 .hr-request-list.compact article { min-height: 57px; padding-inline: 12px; }
 
-.hr-local-only-banner { align-items: center; background: color-mix(in srgb, var(--teal) 7%, var(--paper)); border: 1px solid color-mix(in srgb, var(--teal) 28%, var(--border)); color: var(--teal); display: flex; gap: 11px; margin-bottom: 14px; padding: 12px 15px; }
+.hr-local-only-banner, .hr-hiring-intro { align-items: center; background: color-mix(in srgb, var(--teal) 7%, var(--paper)); border: 1px solid color-mix(in srgb, var(--teal) 28%, var(--border)); color: var(--teal); display: flex; gap: 11px; margin-bottom: 14px; padding: 12px 15px; }
 .hr-local-only-banner span { display: flex; flex-direction: column; }
 .hr-local-only-banner strong { color: var(--ink); font-size: 9px; }
 .hr-local-only-banner small { color: var(--muted); font-size: 7px; margin-top: 4px; }
+.hr-hiring-intro span { display: flex; flex-direction: column; }
+.hr-hiring-intro strong { color: var(--ink); font-size: 9px; }
+.hr-hiring-intro small { color: var(--muted); font-size: 8px; line-height: 1.5; margin-top: 4px; }
 .hr-form-notice { align-items: center; background: var(--paper); border: 1px solid var(--border); color: var(--teal); display: flex; font-size: 8px; justify-content: space-between; margin-bottom: 10px; padding: 9px 12px; }
+.hr-form-notice > span { align-items: center; display: flex; gap: 7px; }
 .hr-form-notice button { background: transparent; border: 0; color: var(--muted); }
 .hr-generation-error { background: color-mix(in srgb, var(--coral) 8%, var(--paper)); border: 1px solid color-mix(in srgb, var(--coral) 35%, var(--border)); color: var(--coral); font-size: 8px; margin-bottom: 10px; padding: 10px 12px; }
 .hr-add-employee-form { display: grid; gap: 14px; }
 .hr-add-employee-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .hr-add-employee-fields .span-two { grid-column: 1 / -1; }
 .hr-field-error { color: var(--coral)!important; font-size: 7px!important; margin: 0!important; }
+.hr-field-hint { color: var(--muted); font-size: 7px; line-height: 1.4; }
 .hr-add-employee-fields input[readonly] { background: var(--soft); color: var(--muted); }
+.hr-hiring-section { overflow: hidden; position: relative; }
+.hr-hiring-section .panel-header { padding-left: 54px; }
+.hr-hiring-section .panel-header > span { max-width: 45%; text-align: right; }
+.hr-section-icon { align-items: center; background: color-mix(in srgb, var(--teal) 11%, transparent); color: var(--teal); display: flex; height: 32px; justify-content: center; left: 12px; position: absolute; top: 8px; width: 32px; }
+.hr-document-grid { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 17px; }
+.hr-document-upload { align-content: start; background: var(--canvas); border: 1px dashed color-mix(in srgb, var(--teal) 35%, var(--border)); display: grid; gap: 12px; min-height: 155px; padding: 14px; }
+.hr-document-upload-copy { align-items: flex-start; display: flex; gap: 10px; }
+.hr-document-upload-copy > span { align-items: center; background: var(--paper); border: 1px solid var(--border); color: var(--teal); display: flex; flex: 0 0 auto; height: 34px; justify-content: center; width: 34px; }
+.hr-document-upload-copy > div { display: flex; flex-direction: column; min-width: 0; }
+.hr-document-upload-copy strong { font-size: 9px; line-height: 1.35; }
+.hr-document-upload-copy strong em { color: var(--coral); font-style: normal; margin-left: 2px; }
+.hr-document-upload-copy small { color: var(--muted); font-size: 7px; line-height: 1.45; margin-top: 4px; }
+.hr-document-upload > label { cursor: pointer; justify-self: start; }
+.hr-document-upload > label input { display: none; }
+.hr-document-upload ul { border-top: 1px solid var(--border); display: grid; list-style: none; margin: 0; padding: 4px 0 0; }
+.hr-document-upload li { align-items: center; display: flex; gap: 8px; justify-content: space-between; min-height: 40px; }
+.hr-document-upload li > span { display: flex; flex-direction: column; min-width: 0; }
+.hr-document-upload li strong { font-size: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hr-document-upload li small { color: var(--muted); font-size: 7px; margin-top: 3px; }
+.hr-document-upload li button { color: var(--coral); flex: 0 0 auto; }
+.hr-attachment-error { background: color-mix(in srgb, var(--coral) 8%, var(--paper)); border-top: 1px solid color-mix(in srgb, var(--coral) 30%, var(--border)); color: var(--coral); font-size: 8px; padding: 11px 17px; }
 .hr-attachment-controls { align-items: center; border-bottom: 1px solid var(--border); display: flex; gap: 9px; padding: 14px 17px; }
 .hr-attachment-controls select { background: var(--canvas); border: 1px solid var(--border); border-radius: var(--radius); color: var(--ink); font-size: 8px; min-height: 34px; padding: 0 10px; }
 .hr-attachment-controls label { cursor: pointer; }
@@ -558,6 +584,7 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
   .hr-profile-score { grid-column: 1 / -1; }
   .hr-employee-hero { grid-template-columns: 1fr 1fr; }
   .hr-add-employee-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hr-document-grid { grid-template-columns: 1fr; }
   .hr-person { grid-column: 1 / -1; }
 }
 
@@ -579,6 +606,8 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
   .hr-form-footer { align-items: stretch; flex-direction: column; gap: 10px; }
   .hr-form-footer .primary-button { width: 100%; }
   .hr-add-employee-fields { grid-template-columns: 1fr; }
+  .hr-hiring-section .panel-header { align-items: flex-start; flex-direction: column; gap: 3px; justify-content: center; padding: 8px 12px 8px 54px; }
+  .hr-hiring-section .panel-header > span { max-width: 100%; text-align: left; }
   .hr-add-employee-fields .span-two { grid-column: auto; }
   .hr-attachment-zone { flex-wrap: wrap; }
   .hr-attachment-zone ul { border-left: 0; border-top: 1px solid var(--border); flex-basis: 100%; margin: 5px 0 0; padding: 12px 0 0; }
