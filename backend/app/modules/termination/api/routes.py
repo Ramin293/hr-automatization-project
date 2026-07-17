@@ -250,6 +250,21 @@ async def legal(
     )
 
 
+@router.post("/{item_id}/economic-review", response_model=DataResponse[dict[str, Any]])
+async def economic(
+    item_id: UUID, body: DecisionBody, ops: Ops, auth: Auth, principal: PrincipalDep
+) -> DataResponse[dict[str, Any]]:
+    return await _decide(
+        "economic_review",
+        "termination.review_economic",
+        item_id,
+        body,
+        ops,
+        auth,
+        principal,
+    )
+
+
 @router.post("/{item_id}/sign", response_model=DataResponse[dict[str, Any]])
 async def sign(
     item_id: UUID, body: DecisionBody, ops: Ops, auth: Auth, principal: PrincipalDep

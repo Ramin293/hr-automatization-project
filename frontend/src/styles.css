@@ -2897,4 +2897,87 @@ body { font-size: 14px; line-height: 1.5; }
   background: color-mix(in srgb, var(--teal) 85%, black) !important;
 }
 
+/* Clickable avatar hover overlay */
+.clickable-avatar {
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+.clickable-avatar::after {
+  content: 'Загрузить фото';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  font-size: 8px;
+  text-align: center;
+  padding: 3px 0;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.clickable-avatar:hover::after {
+  opacity: 1;
+}
+
+/* Hiring styling overrides for Employee Profile page */
+.hiring-detail-main .panel {
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin-top: 18px !important;
+}
+.hiring-detail-main .panel-header {
+  align-items: center !important;
+  border-bottom: 1px solid var(--border) !important;
+  display: flex !important;
+  gap: 12px !important;
+  padding: 0 0 15px 0 !important;
+  margin-bottom: 15px !important;
+}
+.hiring-detail-main .panel-header h2 {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--ink) !important;
+  text-transform: none !important;
+  letter-spacing: normal !important;
+  margin: 0 !important;
+}
+.hiring-detail-main .panel-header span {
+  font-size: 11px !important;
+  color: var(--muted) !important;
+  margin-left: auto !important;
+}
+.hiring-detail-main .hr-request-list,
+.hiring-detail-main .hr-case-card {
+  display: grid !important;
+  gap: 1px !important;
+  margin: 12px 0 !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+  overflow: hidden !important;
+  background: var(--border) !important;
+}
+.hiring-detail-main .hr-request-list article,
+.hiring-detail-main .hr-case-card {
+  align-items: center !important;
+  background: var(--soft) !important;
+  color: inherit !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  padding: 14px 16px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+}
+.hiring-detail-main .hr-empty-note,
+.hiring-detail-main .hr-empty-note + button {
+  margin-top: 12px !important;
+}
+
+
 

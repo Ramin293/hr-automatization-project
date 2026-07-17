@@ -337,6 +337,11 @@ PERMISSION_CATALOG: tuple[PermissionDefinition, ...] = (
         "Perform HR completeness and date review.",
     ),
     PermissionDefinition(
+        "termination.review_economic",
+        "Review termination economics",
+        "Confirm staffing and settlement implications before termination.",
+    ),
+    PermissionDefinition(
         "termination.review_legal",
         "Review termination as legal",
         "Perform configured legal review.",

@@ -250,6 +250,8 @@ SEED_ROLES: tuple[SeedRoleDefinition, ...] = (
                 "documents.read_sensitive",
                 "absence.read_all",
                 "business_trip.review_finance",
+                "termination.read_all",
+                "termination.review_economic",
                 "audit.read",
             }
         ),
