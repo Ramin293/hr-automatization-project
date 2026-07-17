@@ -8,6 +8,7 @@ from app.core.errors import ResourceNotFoundError, ValidationError
 from app.modules.documents.infrastructure.models import DocumentTypeModel
 from app.modules.documents.infrastructure.operations import SqlAlchemyDocumentOperations
 from app.modules.employees.infrastructure.crypto import FernetSensitiveDataProtector
+from app.modules.employees.infrastructure.models import EmployeeAssignmentModel
 from app.modules.recruitment.infrastructure.operations import SqlAlchemyRecruitmentOperations
 from app.modules.termination.infrastructure.operations import SqlAlchemyTerminationOperations
 from app.modules.workflow.infrastructure.models import ProcessInstanceModel, WorkflowTaskModel
@@ -725,7 +726,19 @@ async def test_termination_keeps_assignment_until_effective_completion(
                 {"id": employee_id},
             )
         ).one()
+        remaining_assignments = int(
+            await session.scalar(
+                select(func.count())
+                .select_from(EmployeeAssignmentModel)
+                .where(
+                    EmployeeAssignmentModel.employee_id == employee_id,
+                    EmployeeAssignmentModel.status != "ended",
+                )
+            )
+            or 0
+        )
     assert tuple(after) == (False, "ended", "ended", False)
+    assert remaining_assignments == 0
     with pytest.raises(Exception) as cancellation:
         await operations.cancel(
             UUID(str(case["id"])),

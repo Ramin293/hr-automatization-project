@@ -778,9 +778,11 @@ class SqlAlchemyTerminationOperations:
                 )
             ).all()
             for assignment in assignments:
-                if assignment.effective_to and assignment.effective_to <= row.effective_date:
-                    assignment.status = "ended"
-                    assignment.revision += 1
+                if assignment.status == "ended":
+                    continue
+                assignment.effective_to = max(row.effective_date, assignment.effective_from)
+                assignment.status = "ended"
+                assignment.revision += 1
             # "ended" is the only terminal EmploymentStatus the employees domain
             # can hydrate; anything else breaks every read of this employee.
             employee.employment_status = "ended"
