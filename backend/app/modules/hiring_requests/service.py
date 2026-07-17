@@ -151,13 +151,25 @@ class HiringRequestService:
                         allowed.append(index)
                     except ForbiddenError:
                         pass
+                already_decided_in_cycle = (
+                    select(HiringApprovalDecisionModel.id)
+                    .where(
+                        HiringApprovalDecisionModel.request_id == HiringRequestModel.id,
+                        HiringApprovalDecisionModel.approval_cycle
+                        == HiringRequestModel.approval_cycle,
+                        HiringApprovalDecisionModel.approver_user_id == principal.user_id,
+                    )
+                    .exists()
+                )
                 stmt = stmt.where(
                     HiringRequestModel.status == "under_review",
                     HiringRequestModel.current_stage.in_(allowed or [-1]),
+                    ~already_decided_in_cycle,
                 )
             elif scope == "received":
                 stmt = stmt.join(HiringDispatchModel).where(
-                    HiringDispatchModel.assigned_user_id == principal.user_id
+                    HiringDispatchModel.assigned_user_id == principal.user_id,
+                    HiringDispatchModel.status != "acknowledged",
                 )
             rows = (
                 await session.scalars(stmt.order_by(HiringRequestModel.created_at.desc()))
