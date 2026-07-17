@@ -2820,8 +2820,7 @@ body { font-size: 14px; line-height: 1.5; }
 
 /* Employee created box */
 .hiring-employee-created-panel {
-  border-top: 1px solid var(--border);
-  padding-top: 20px;
+  margin-top: 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
