@@ -65,12 +65,12 @@ export default function HiringRequestDetailsPage() {
     
     <div className="hiring-detail-grid">
       <section className="hiring-detail-main hiring-request-information">
-        <header>
+        <div className="hiring-main-title">ЗАЯВЛЕНИЕ НА НАЙМ</div>
+        
+        <header className="hiring-panel-header">
           <span><UserRound size={20} /></span>
           <div>
-            <small>ЗАЯВЛЕНИЕ НА НАЙМ</small>
             <strong>Информация о кандидате</strong>
-            <p>Сведения из зарегистрированного пакета документов</p>
           </div>
         </header>
         
@@ -144,23 +144,16 @@ export default function HiringRequestDetailsPage() {
             </dl>
           </div>
         </div>
-        
-        <div className="hiring-private-route-note">
-          <FileText size={18} />
-          <div>
-            <strong>Заявление зарегистрировано</strong>
-            <p>Пакет передан ответственным подразделениям. Внутренний маршрут рассмотрения не отображается.</p>
-          </div>
-        </div>
       </section>
 
       <aside className="hiring-document-panel">
-        <h3><FileText size={18} />Пакет документов</h3>
-        {finalVersion && (
-          <a className="primary-button full" href={hiringRequestsApi.downloadUrl(id, finalVersion, true)} target="_blank" rel="noreferrer">
-            <FileText size={16} />Открыть заявление
-          </a>
-        )}
+        <header className="hiring-panel-header">
+          <span><FileText size={20} /></span>
+          <div>
+            <strong>Пакет документов</strong>
+          </div>
+        </header>
+
         <div className="hiring-files">
           {request.attachments.map((file) => (
             <a href={hiringRequestsApi.downloadUrl(id, file.versionId)} key={file.id}>
@@ -172,6 +165,12 @@ export default function HiringRequestDetailsPage() {
             </a>
           ))}
         </div>
+
+        {finalVersion && (
+          <a className="open-app-button" href={hiringRequestsApi.downloadUrl(id, finalVersion, true)} target="_blank" rel="noreferrer">
+            <FileText size={16} />Открыть заявление
+          </a>
+        )}
       </aside>
     </div>
 
@@ -245,7 +244,7 @@ export default function HiringRequestDetailsPage() {
           <div className="hiring-dispatch-panel">
             <button disabled={action.isPending} className="primary-button" onClick={() => action.mutate('dispatch')}>
               <Send size={16} /> Отправить в бухгалтерию и IT
-            </button>
+          </button>
           </div>
         )}
 

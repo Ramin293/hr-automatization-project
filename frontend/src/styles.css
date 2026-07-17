@@ -982,9 +982,10 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
 .api-error-card p { margin: 5px 0 0; }
 .hiring-detail-grid { align-items: stretch !important; display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); }
 .hiring-detail-main, .hiring-document-panel { background: var(--paper); border: 1px solid var(--border); border-radius: 18px; padding: 18px; }
-.hiring-detail-main > header { align-items: center; border-bottom: 1px solid var(--border); display: flex; gap: 12px; padding-bottom: 15px; }
-.hiring-detail-main > header > span { align-items: center; background: color-mix(in srgb, var(--teal) 12%, var(--paper)) !important; border-radius: 10px !important; color: var(--teal) !important; display: flex; height: 38px; justify-content: center; width: 38px; }
-.hiring-detail-main > header small, .hiring-detail-main > header strong { display: block; }
+.hiring-panel-header { align-items: center; border-bottom: 1px solid var(--border); display: flex; gap: 12px; padding-bottom: 15px; margin-bottom: 15px; }
+.hiring-panel-header > span { align-items: center; background: color-mix(in srgb, var(--teal) 12%, var(--paper)) !important; border-radius: 10px !important; color: var(--teal) !important; display: flex; height: 38px; justify-content: center; width: 38px; }
+.hiring-panel-header strong { display: block; font-size: 15px; font-weight: 700; color: var(--ink); }
+.hiring-main-title { font-size: 20px; font-weight: 700; color: var(--teal); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.05em; }
 .hiring-detail-main h3, .hiring-document-panel h3 { align-items: center; display: flex; font-size: 14px; gap: 8px; margin: 18px 0 12px; }
 .workforce-create-section { border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border)); box-shadow: 0 16px 42px color-mix(in srgb, var(--primary) 8%, transparent); margin-bottom: 20px; overflow: hidden; animation: lifecycle-rise .24s ease both; }
 .workforce-create-section > header { background: linear-gradient(135deg, color-mix(in srgb, var(--primary) 10%, var(--paper)), var(--paper)); }
@@ -2718,8 +2719,6 @@ body { font-size: 14px; line-height: 1.5; }
   display: flex;
   flex-direction: column;
   gap: 16px;
-  border-top: 1px solid var(--border);
-  padding-top: 20px;
 }
 
 .comment-input-area {
@@ -2854,6 +2853,34 @@ body { font-size: 14px; line-height: 1.5; }
   font-size: 14px;
   font-weight: 700;
   color: var(--ink);
+}
+
+.hiring-information-grid.cols-4 {
+  grid-template-columns: repeat(4, 1fr) !important;
+}
+
+.open-app-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--teal) !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 9px !important;
+  min-height: 40px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  width: 100%;
+  margin-top: 15px;
+}
+
+.open-app-button:hover {
+  background: color-mix(in srgb, var(--teal) 85%, black) !important;
 }
 
 
