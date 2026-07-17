@@ -26,7 +26,9 @@ export default function HrOverviewPage() {
   const permissions = getPermissions(persona);
   const attentionScope: HiringRequestScope = permissions.includes('hiring.approve')
     ? 'inbox'
-    : permissions.includes('hiring.receive') ? 'received' : 'mine';
+    : permissions.includes('hiring.receive')
+      ? 'received'
+      : permissions.includes('hiring.initiate') ? 'dispatch' : 'mine';
   const overview = useQuery({ queryKey: ['hr', 'overview'], queryFn: () => hrRepository.getOverview(), enabled: canOpen && isHr });
   const employee = useQuery({ queryKey: ['hr', 'employee', 'me'], queryFn: () => hrRepository.getCurrentEmployee(), enabled: canOpen && !isHr });
   const leaveRequests = useQuery({ queryKey: ['hr', 'leave'], queryFn: () => hrRepository.listLeaveRequests(), enabled: canOpen });
@@ -55,8 +57,8 @@ export default function HrOverviewPage() {
   }
 
   const stats = overview.data!;
-  const messages = hiringActivity.data!.filter((item) => !['draft', 'pdf_generated'].includes(item.status));
-  const pending = permissions.includes('hiring.approve') ? messages : [];
+  const messages = hiringActivity.data!;
+  const pending = permissions.includes('hiring.approve') || permissions.includes('hiring.initiate') ? messages : [];
   const workforceTotal = Math.max(1, stats.activeEmployees + stats.onLeave + stats.onBusinessTrip + stats.onSickLeave);
   const presenceRate = Math.round(stats.activeEmployees / workforceTotal * 100);
   const workforceChart = [
@@ -95,7 +97,7 @@ export default function HrOverviewPage() {
                             {String(request.employmentData.department ?? 'Подразделение не указано')} · {String(request.employmentData.position ?? 'Должность не указана')}
                           </span>
                         </div>
-                        <span className="hub-row-tag tag-urgent">Требует действия</span>
+                        <span className="hub-row-tag tag-urgent">{attentionScope === 'dispatch' ? 'Отправить в подразделения' : 'Требует действия'}</span>
                       </div>
 
                       <div className="hub-row-body hub-request-facts">
@@ -109,7 +111,7 @@ export default function HrOverviewPage() {
                           Номер: <code>{request.requestNumber}</code> · Пакет зарегистрирован
                         </span>
                         <span className="hub-row-action-btn">
-                          Рассмотреть <ArrowRight size={14} />
+                          {attentionScope === 'dispatch' ? 'Передать в бухгалтерию и IT' : 'Рассмотреть'} <ArrowRight size={14} />
                         </span>
                       </div>
                     </Link>
@@ -221,7 +223,7 @@ export default function HrOverviewPage() {
                             Заявка <code>{item.requestNumber}</code> переведена в статус <strong>{hiringStatusLabels[item.status] ?? item.status}</strong>
                           </p>
                           <div className="hub-timeline-footer">
-                            <span>Пакет документов</span>
+                            <span>{attentionScope === 'dispatch' ? 'Готов к отправке в бухгалтерию и IT' : 'Пакет документов'}</span>
                             <span className="hub-timeline-action">Открыть <ArrowRight size={12} /></span>
                           </div>
                         </div>

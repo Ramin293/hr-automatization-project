@@ -32,7 +32,7 @@ const personaToHiringDevUser: Record<string, string> = {
   'it-specialist': 'it.specialist'
 };
 
-export type HiringRequestScope = 'mine' | 'inbox' | 'received' | undefined;
+export type HiringRequestScope = 'mine' | 'inbox' | 'received' | 'dispatch' | undefined;
 
 export const hiringStatusLabels: Record<string, string> = {
   draft: 'Черновик', pdf_generated: 'PDF готов', under_review: 'На согласовании',

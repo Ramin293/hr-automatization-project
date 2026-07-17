@@ -143,6 +143,12 @@ class HiringRequestService:
             )
             if scope == "mine":
                 stmt = stmt.where(HiringRequestModel.created_by == principal.user_id)
+            elif scope == "dispatch":
+                await self.require(principal, "hiring.request.dispatch", organization_id)
+                stmt = stmt.where(
+                    HiringRequestModel.created_by == principal.user_id,
+                    HiringRequestModel.status == "final_approved",
+                )
             elif scope == "inbox":
                 allowed = []
                 for index, stage in enumerate(APPROVAL_STAGES):
