@@ -112,7 +112,10 @@ function payload(values: AddEmployeeFormValues) {
 export const hiringRequestsApi = {
   create: (values: AddEmployeeFormValues) => api.post<HiringRequest>('/hiring-requests', payload(values), hiringDevUser()),
   update: (id: string, revision: number, values: AddEmployeeFormValues) => api.patch<HiringRequest>(`/hiring-requests/${id}`, { ...payload(values), revision }, hiringDevUser()),
-  list: (scope: HiringRequestScope = 'mine') => api.get<HiringRequest[]>(`/hiring-requests?organizationId=${DEMO_ORGANIZATION_ID}${scope ? `&scope=${scope}` : ''}`, hiringDevUser()),
+  list: async (scope: HiringRequestScope = 'mine') => {
+    const requests = await api.get<HiringRequest[]>(`/hiring-requests?organizationId=${DEMO_ORGANIZATION_ID}${scope ? `&scope=${scope}` : ''}`, hiringDevUser());
+    return scope === 'dispatch' ? requests.filter((request) => request.status === 'final_approved') : requests;
+  },
   get: (id: string) => api.get<HiringRequest>(`/hiring-requests/${id}?organizationId=${DEMO_ORGANIZATION_ID}`, hiringDevUser()),
   upload: (id: string, category: 'identity' | 'diploma', file: File) => {
     const data = new FormData(); data.append('organizationId', DEMO_ORGANIZATION_ID); data.append('category', category); data.append('file', file);

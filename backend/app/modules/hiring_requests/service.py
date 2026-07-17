@@ -177,6 +177,8 @@ class HiringRequestService:
                     HiringDispatchModel.assigned_user_id == principal.user_id,
                     HiringDispatchModel.status != "acknowledged",
                 )
+            elif scope is not None:
+                raise ValidationError("Unsupported hiring request scope")
             rows = (
                 await session.scalars(stmt.order_by(HiringRequestModel.created_at.desc()))
             ).all()

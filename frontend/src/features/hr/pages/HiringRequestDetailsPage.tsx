@@ -34,9 +34,14 @@ export default function HiringRequestDetailsPage() {
       if (kind === 'acknowledge') return hiringRequestsApi.acknowledge(id, query.data.revision, comment);
       return hiringRequestsApi.decide(id, query.data.revision, kind, comment);
     }, 
-    onSuccess: async () => {
+    onSuccess: async (_result, kind) => {
       setComment(''); 
       setError('');
+      if (kind === 'dispatch' || kind === 'acknowledge') {
+        client.setQueriesData({ queryKey: ['hiring-requests'] }, (current) => (
+          Array.isArray(current) ? current.filter((item) => item?.id !== id) : current
+        ));
+      }
       await Promise.all([
         client.invalidateQueries({ queryKey: ['hiring-request', id] }),
         client.invalidateQueries({ queryKey: ['hiring-requests'] })
