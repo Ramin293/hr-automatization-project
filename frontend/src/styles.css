@@ -738,10 +738,10 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
 /* Step States */
 /* 1. Done/Completed */
 .hr-timeline-item.done .hr-timeline-icon-wrapper {
-  background: linear-gradient(135deg, var(--emerald), #2ed573);
+  background: linear-gradient(135deg, var(--teal), var(--violet));
   border-color: transparent;
   color: white;
-  box-shadow: 0 4px 14px color-mix(in srgb, var(--emerald) 40%, transparent);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--teal) 40%, transparent);
 }
 
 .hr-timeline-item.done .hr-icon-check {
