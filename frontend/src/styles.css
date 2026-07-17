@@ -257,7 +257,7 @@ kbd { align-items: center; background: var(--paper); border: 1px solid var(--bor
 }
 
 .field-search svg {
-  color: var(--muted);
+  color: var(--teal) !important;
   flex-shrink: 0;
 }
 
@@ -2397,18 +2397,18 @@ body { font-size: 14px; line-height: 1.5; }
 }
 
 .select-icon {
-  color: var(--muted);
+  color: var(--teal) !important;
   flex-shrink: 0;
   transition: color 0.2s ease;
 }
 
 .custom-select-btn.active .select-icon {
-  color: var(--teal);
+  color: var(--teal) !important;
 }
 
 .arrow-icon {
   margin-left: auto;
-  color: var(--muted);
+  color: var(--teal) !important;
   transition: transform 0.2s ease;
   flex-shrink: 0;
 }
