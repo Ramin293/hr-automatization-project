@@ -112,7 +112,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 kbd { align-items: center; background: var(--paper); border: 1px solid var(--border); border-radius: 4px; display: inline-flex; font-family: var(--font-mono); font-size: 8px; gap: 3px; padding: 3px 5px; }
 .create-button, .primary-button, .secondary-button, .toolbar-button { align-items: center; border-radius: var(--radius); display: inline-flex; font-size: 10px; font-weight: 600; gap: 7px; justify-content: center; min-height: 34px; padding: 0 13px; white-space: nowrap; }
 .create-button, .primary-button { background: var(--teal); border: 1px solid var(--teal); color: white; }
-.create-button:hover, .primary-button:hover { background: #0f857d; }
+.create-button:hover, .primary-button:hover {
+  background: color-mix(in srgb, var(--teal) 85%, black) !important;
+  border-color: color-mix(in srgb, var(--teal) 85%, black) !important;
+}
 .primary-button:disabled { cursor: not-allowed; opacity: .45; }
 .secondary-button, .toolbar-button { background: var(--paper); border: 1px solid var(--border); color: var(--ink); }
 .secondary-button:hover, .toolbar-button:hover { background: var(--soft); }
