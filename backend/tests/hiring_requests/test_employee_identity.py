@@ -2,7 +2,11 @@ from datetime import date
 
 import pytest
 from app.core.errors import ConflictError
-from app.modules.hiring_requests.service import calculate_probation_end, format_employee_identity
+from app.modules.hiring_requests.service import (
+    calculate_probation_end,
+    format_employee_identity,
+    resolve_department_director,
+)
 
 
 @pytest.mark.parametrize(
@@ -44,3 +48,26 @@ def test_calculate_probation_end_uses_contract_months(
     hire_date: date, months: int, expected: date
 ) -> None:
     assert calculate_probation_end(hire_date, months) == expected
+
+
+@pytest.mark.parametrize(
+    ("department", "expected"),
+    [
+        ("Департамент управления персоналом", "Сауле Бекенова"),
+        ("Департамент цифровой трансформации", "Мирас Абдрахманов"),
+        ("Строительный департамент", "Нуржан Тлеубаев"),
+        ("Юридический департамент", "Елена Ким"),
+        ("Департамент экономического планирования", "Руслан Ибраев"),
+    ],
+)
+def test_resolve_department_director_uses_department_configuration(
+    department: str, expected: str
+) -> None:
+    assert resolve_department_director(department, "Не указан") == expected
+
+
+def test_resolve_department_director_falls_back_to_requested_manager() -> None:
+    assert resolve_department_director("Новый департамент", "Алия Сарсенова") == (
+        "Алия Сарсенова"
+    )
+    assert resolve_department_director("Новый департамент", "Не указан") is None

@@ -36,6 +36,14 @@ from .infrastructure.models import (
 from .pdf import render_hiring_request_pdf
 
 MAX_EMPLOYEE_NUMBER = 999_999
+DEPARTMENT_DIRECTORS = {
+    "Департамент управления персоналом": "Сауле Бекенова",
+    "Департамент документооборота и управления персоналом": "Сауле Бекенова",
+    "Департамент цифровой трансформации": "Мирас Абдрахманов",
+    "Строительный департамент": "Нуржан Тлеубаев",
+    "Юридический департамент": "Елена Ким",
+    "Департамент экономического планирования": "Руслан Ибраев",
+}
 
 
 def format_employee_identity(sequence_value: int) -> tuple[str, str]:
@@ -61,6 +69,17 @@ def calculate_probation_end(hire_date: date, probation_months: object) -> date |
     month = month_index % 12 + 1
     day = min(hire_date.day, monthrange(year, month)[1])
     return date(year, month, day)
+
+
+def resolve_department_director(department: object, requested_manager: object) -> str | None:
+    """Resolve the department director stored on the hired employee profile."""
+
+    department_name = str(department or "").strip()
+    configured = DEPARTMENT_DIRECTORS.get(department_name)
+    if configured:
+        return configured
+    manager = str(requested_manager or "").strip()
+    return manager if manager and manager != "Не указан" else None
 
 
 class HiringRequestService:
@@ -667,6 +686,12 @@ class HiringRequestService:
         hire_date_value = str(employment.get("startDate") or "").strip()
         hire_date = date.fromisoformat(hire_date_value) if hire_date_value else timestamp.date()
         probation_end = calculate_probation_end(hire_date, employment.get("probationMonths"))
+        position_title = str(employment.get("position") or "").strip() or None
+        department_name = str(employment.get("department") or "").strip() or None
+        manager_name = resolve_department_director(
+            employment.get("department"), employment.get("manager")
+        )
+        employment_type_label = str(employment.get("employmentType") or "").strip() or None
         iin = str(personal.get("iin") or "").strip()
 
         person = PersonModel(
@@ -691,6 +716,10 @@ class HiringRequestService:
             person_id=person_id,
             employee_number=employee_number,
             employment_status="active",
+            position_title=position_title,
+            department_name=department_name,
+            manager_name=manager_name,
+            employment_type_label=employment_type_label,
             hire_date=hire_date,
             probation_end=probation_end,
             termination_date=None,
@@ -716,6 +745,9 @@ class HiringRequestService:
                 "hiringRequestId": str(row.id),
                 "employeeNumber": employee_number,
                 "corporateEmail": corporate_email,
+                "positionTitle": position_title,
+                "departmentName": department_name,
+                "managerName": manager_name,
                 "probationEnd": probation_end.isoformat() if probation_end else None,
             },
             organization_id=row.organization_id,
@@ -732,6 +764,9 @@ class HiringRequestService:
                     "hireDate": employee.hire_date.isoformat(),
                     "employeeNumber": employee_number,
                     "corporateEmail": corporate_email,
+                    "positionTitle": position_title,
+                    "departmentName": department_name,
+                    "managerName": manager_name,
                     "probationEnd": probation_end.isoformat() if probation_end else None,
                 },
             )

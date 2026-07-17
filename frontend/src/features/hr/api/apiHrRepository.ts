@@ -35,6 +35,10 @@ type CoreEmployee = {
   employeeNumber: string;
   displayName: string;
   employmentStatus: string;
+  positionTitle?: string | null;
+  departmentName?: string | null;
+  managerName?: string | null;
+  employmentTypeLabel?: string | null;
   hireDate: string;
   probationEnd?: string | null;
   terminationDate: string | null;
@@ -91,16 +95,16 @@ function toHrEmployee(employee: CoreEmployee, directory: Directory, activeAbsenc
     employeeNumber: employee.employeeNumber,
     fullName: employee.displayName,
     initials: initials(employee.displayName),
-    position: (slot && directory.positionNames.get(slot.positionDefinitionId)) ?? 'Должность не назначена',
-    department: (slot && directory.unitNames.get(slot.organizationUnitId)) ?? 'Подразделение не назначено',
-    manager: null,
+    position: employee.positionTitle ?? (slot && directory.positionNames.get(slot.positionDefinitionId)) ?? 'Должность не назначена',
+    department: employee.departmentName ?? (slot && directory.unitNames.get(slot.organizationUnitId)) ?? 'Подразделение не назначено',
+    manager: employee.managerName ?? null,
     workEmail: employee.corporateEmail ?? '',
     phone: '',
     startDate: employee.hireDate,
     location: 'Павлодар',
     status: absenceStatus ?? (onProbation ? 'probation' : 'active'),
     availability: activeAbsence ? 'away' : 'available',
-    employmentType: assignment?.assignmentType ?? 'not_assigned',
+    employmentType: employee.employmentTypeLabel ?? assignment?.assignmentType ?? 'Не назначен',
     contractEnd: assignment?.effectiveTo ?? null,
     probationEnd: employee.probationEnd ?? null,
     leaveBalance,
