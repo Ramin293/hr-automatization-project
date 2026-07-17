@@ -95,7 +95,12 @@ export default function HiringRequestDetailsPage() {
         </div>
         
         <div className="hiring-information-section">
-          <h3><BriefcaseBusiness size={17} />Параметры трудоустройства</h3>
+          <header className="hiring-panel-header">
+            <span><BriefcaseBusiness size={20} /></span>
+            <div>
+              <strong>Параметры трудоустройства</strong>
+            </div>
+          </header>
           <div className="hiring-information-grid">
             <dl>
               <dt>Подразделение</dt>
@@ -125,7 +130,12 @@ export default function HiringRequestDetailsPage() {
         </div>
         
         <div className="hiring-information-section">
-          <h3><GraduationCap size={17} />Образование и опыт</h3>
+          <header className="hiring-panel-header">
+            <span><GraduationCap size={20} /></span>
+            <div>
+              <strong>Образование и опыт</strong>
+            </div>
+          </header>
           <div className="hiring-information-grid cols-4">
             <dl>
               <dt>Уровень образования</dt>
