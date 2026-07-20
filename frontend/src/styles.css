@@ -3156,3 +3156,6 @@ body { font-size: 14px; line-height: 1.5; }
   .wf-tier { grid-template-columns: 1fr; gap: 2px; }
   .wf-dept-meta { grid-template-columns: 1fr; }
 }
+
+.wf-embedded-actions { display: flex; justify-content: flex-end; margin-bottom: 12px; }
+.wf-embedded-actions:empty { display: none; }

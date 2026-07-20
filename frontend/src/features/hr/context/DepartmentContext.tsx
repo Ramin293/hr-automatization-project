@@ -16,7 +16,9 @@ const hrPages: Array<[RegExp, string]> = [
   [/\/absence-calendar$/, 'Календарь отсутствий'], [/\/onboarding$/, 'Адаптация'],
   [/\/probation$/, 'Испытательный срок'], [/\/terminations$/, 'Увольнения'],
   [/\/offboarding$/, 'Оффбординг'], [/\/messages$/, 'Входящие сообщения'],
-  [/\/documents$/, 'Документы'], [/\/approvals$/, 'Согласования'], [/\/analytics$/, 'Аналитика'], [/\/(hr|departments\/hr)\/?$/, 'Главная']
+  [/\/documents$/, 'Документы'], [/\/approvals$/, 'Согласования'], [/\/analytics$/, 'Аналитика'],
+  [/\/systems$/, 'Кадровые системы'], [/\/hierarchy$/, 'Иерархия ролей'], [/\/hiring$/, 'Регламент найма'],
+  [/\/(hr|departments\/hr)\/?$/, 'Главная']
 ];
 
 export function DepartmentProvider({ children }: PropsWithChildren) {

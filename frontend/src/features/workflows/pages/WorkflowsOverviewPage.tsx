@@ -20,7 +20,7 @@ interface SystemCard {
 
 const cards: SystemCard[] = [
   {
-    to: '/workflows/hierarchy',
+    to: '/hr/hierarchy',
     icon: Network,
     eyebrow: 'Организация',
     title: 'Иерархия ролей',
@@ -33,7 +33,7 @@ const cards: SystemCard[] = [
     tone: 'violet'
   },
   {
-    to: '/workflows/hiring',
+    to: '/hr/hiring',
     icon: UserPlus,
     eyebrow: 'Регламент найма',
     title: 'Система найма',
@@ -46,7 +46,7 @@ const cards: SystemCard[] = [
     tone: 'teal'
   },
   {
-    to: '/workflows/termination',
+    to: '/hr/terminations',
     icon: UserMinus,
     eyebrow: 'Регламент увольнения',
     title: 'Прекращение отношений',
@@ -59,7 +59,7 @@ const cards: SystemCard[] = [
     tone: 'coral'
   },
   {
-    to: '/workflows/leave',
+    to: '/hr/leave',
     icon: CalendarCheck2,
     eyebrow: 'Регламент отпусков',
     title: 'Система отпусков',
