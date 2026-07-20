@@ -14,6 +14,7 @@ import {
   TERMINATION_STATUSES
 } from './data/termination';
 import { LEAVE_DOCUMENTS, LEAVE_GATES, LEAVE_META, LEAVE_PAYMENT, LEAVE_PLANNING, LEAVE_ROLES, LEAVE_STAGES, LEAVE_STATUSES, LEAVE_TYPES } from './data/leave';
+import { SICK_BENEFIT_STEPS, SICK_DOCUMENTS, SICK_GATES, SICK_META, SICK_NO_BENEFIT, SICK_ROLES, SICK_ROUTES, SICK_STAGES, SICK_STATUSES } from './data/sick';
 
 export const hiringSystemConfig: ProcessSystemConfig = {
   meta: HIRING_META,
@@ -181,6 +182,69 @@ export const leaveSystemConfig: ProcessSystemConfig = {
               { key: 'unit', label: 'Единица' },
               { key: 'calc', label: 'Расчёт' },
               { key: 'term', label: 'Срок' }
+            ]}
+          />
+        </Section>
+      )
+    }
+  ]
+};
+
+export const sickSystemConfig: ProcessSystemConfig = {
+  meta: SICK_META,
+  stages: SICK_STAGES,
+  roles: SICK_ROLES,
+  gates: SICK_GATES,
+  statuses: SICK_STATUSES,
+  documents: SICK_DOCUMENTS,
+  extraTabs: [
+    {
+      id: 'routes',
+      label: 'Маршруты S01–S18',
+      count: SICK_ROUTES.length,
+      render: () => (
+        <Section title="Справочник маршрутов нетрудоспособности" meta="Лист / справка · вид документа определяет оплату">
+          <ReferenceTable
+            rows={SICK_ROUTES}
+            columns={[
+              { key: 'code', label: 'Код' },
+              { key: 'scenario', label: 'Сценарий' },
+              { key: 'basis', label: 'Основание' },
+              { key: 'result', label: 'Результат' }
+            ]}
+          />
+        </Section>
+      )
+    },
+    {
+      id: 'benefit',
+      label: 'Расчёт пособия',
+      count: SICK_BENEFIT_STEPS.length,
+      render: () => (
+        <Section title="Точный расчёт пособия" meta="MIN(средний дневной × рабочие дни; 25 × МРП)">
+          <ReferenceTable
+            rows={SICK_BENEFIT_STEPS}
+            columns={[
+              { key: 'step', label: 'Шаг' },
+              { key: 'indicator', label: 'Показатель' },
+              { key: 'rule', label: 'Правило' }
+            ]}
+          />
+        </Section>
+      )
+    },
+    {
+      id: 'no-benefit',
+      label: 'Без пособия',
+      count: SICK_NO_BENEFIT.length,
+      render: () => (
+        <Section title="Когда пособие не выплачивается" meta="Ст. 133 ТК РК · обязательный контроль">
+          <ReferenceTable
+            rows={SICK_NO_BENEFIT}
+            columns={[
+              { key: 'code', label: 'Код' },
+              { key: 'event', label: 'Случай' },
+              { key: 'control', label: 'Обязательный контроль' }
             ]}
           />
         </Section>

@@ -24,6 +24,7 @@ const HierarchyPage = lazy(() => import('../features/workflows/pages/HierarchyPa
 const HiringSystemPage = lazy(() => import('../features/workflows/pages/HiringSystemPage'));
 const TerminationWorkspacePage = lazy(() => import('../features/workflows/pages/TerminationWorkspacePage'));
 const LeaveWorkspacePage = lazy(() => import('../features/workflows/pages/LeaveWorkspacePage'));
+const SickSystemPage = lazy(() => import('../features/workflows/pages/SickSystemPage'));
 
 function LoadingState() {
   return <div className="page-loading" aria-label="Загрузка"><span /><span /><span /></div>;
@@ -59,7 +60,7 @@ export function App() {
         <Route path="hr/business-trips" element={<Suspense fallback={<LoadingState />}><WorkforceProcessPage kind="trip" /></Suspense>} />
         <Route path="hr/business-trips/:id" element={<Suspense fallback={<LoadingState />}><WorkforceProcessDetailsPage kind="trip" /></Suspense>} />
         <Route path="hr/calendar" element={<Suspense fallback={<LoadingState />}><HrPlannedPage kind="calendar" /></Suspense>} />
-        <Route path="hr/sick-leave" element={<Suspense fallback={<LoadingState />}><HrPlannedPage kind="sick" /></Suspense>} />
+        <Route path="hr/sick-leave" element={<Suspense fallback={<LoadingState />}><SickSystemPage /></Suspense>} />
         <Route path="hr/terminations" element={<Suspense fallback={<LoadingState />}><TerminationWorkspacePage /></Suspense>} />
         <Route path="hr/terminations/:id" element={<Suspense fallback={<LoadingState />}><WorkforceProcessDetailsPage kind="termination" /></Suspense>} />
         <Route path="hr/documents" element={<Suspense fallback={<LoadingState />}><HrPlannedPage kind="documents" /></Suspense>} />
