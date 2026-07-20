@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Bell, Blocks, BriefcaseBusiness, Building2, CalendarDays, CheckSquare2, ClipboardCheck, FileCheck2, FileInput, FileText, Gauge, HeartPulse, Menu, Moon, PanelLeftClose, PanelLeftOpen, Plus, Search, Settings2, Sun, UserMinus, UserPlus, UsersRound, X } from 'lucide-react';
+import { Bell, Blocks, BriefcaseBusiness, Building2, CalendarDays, CheckSquare2, ClipboardCheck, FileCheck2, FileInput, FileText, Gauge, HeartPulse, Menu, Moon, Network, PanelLeftClose, PanelLeftOpen, Plus, Search, Settings2, Sun, UserMinus, UserPlus, UsersRound, Workflow, X } from 'lucide-react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { repositories } from '../repositories';
 import { hrRepository } from '../features/hr/api';
@@ -74,6 +74,8 @@ export function AppShell() {
     { section: 'Управление', to: '/hr/approvals', icon: ClipboardCheck, label: 'Согласования' },
     { section: 'Управление', to: '/processes', icon: Blocks, label: t(store.locale, 'processes'), badge: counts?.processes },
     { section: 'Управление', to: '/organization', icon: Building2, label: t(store.locale, 'organization') },
+    { section: 'Регламенты', to: '/workflows', icon: Workflow, label: 'Кадровые системы', end: true },
+    { section: 'Регламенты', to: '/workflows/hierarchy', icon: Network, label: 'Иерархия ролей' },
     ...hiringNav
   ] : [
     { section: 'Меню', to: '/', icon: Gauge, label: t(store.locale, 'home'), end: true },
@@ -81,6 +83,8 @@ export function AppShell() {
     { section: 'Меню', to: '/correspondence/incoming', icon: FileInput, label: t(store.locale, 'incoming'), badge: counts?.correspondence },
     { section: 'Управление', to: '/processes', icon: Blocks, label: t(store.locale, 'processes'), badge: counts?.processes },
     { section: 'Управление', to: '/organization', icon: Building2, label: t(store.locale, 'organization') },
+    { section: 'Регламенты', to: '/workflows', icon: Workflow, label: 'Кадровые системы', end: true },
+    { section: 'Регламенты', to: '/workflows/hierarchy', icon: Network, label: 'Иерархия ролей' },
     ...(canOpenHr ? [{ section: 'HR', to: '/hr', icon: UsersRound, label: t(store.locale, 'hr') }] : []),
     ...hiringNav
   ], [canOpenHr, counts, department.isHrWorkspace, hiringNav, store.locale]);

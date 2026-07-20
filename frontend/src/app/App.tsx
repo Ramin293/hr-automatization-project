@@ -19,6 +19,11 @@ const HiringRequestsPage = lazy(() => import('../features/hr/pages/HiringRequest
 const HiringRequestDetailsPage = lazy(() => import('../features/hr/pages/HiringRequestDetailsPage'));
 const WorkforceProcessPage = lazy(() => import('../features/hr/pages/WorkforceProcessPage'));
 const WorkforceProcessDetailsPage = lazy(() => import('../features/hr/pages/WorkforceProcessDetailsPage'));
+const WorkflowsOverviewPage = lazy(() => import('../features/workflows/pages/WorkflowsOverviewPage'));
+const HierarchyPage = lazy(() => import('../features/workflows/pages/HierarchyPage'));
+const HiringSystemPage = lazy(() => import('../features/workflows/pages/HiringSystemPage'));
+const TerminationSystemPage = lazy(() => import('../features/workflows/pages/TerminationSystemPage'));
+const LeaveSystemPage = lazy(() => import('../features/workflows/pages/LeaveSystemPage'));
 
 function LoadingState() {
   return <div className="page-loading" aria-label="Загрузка"><span /><span /><span /></div>;
@@ -64,6 +69,11 @@ export function App() {
         <Route path="hiring/inbox" element={<Suspense fallback={<LoadingState />}><HiringRequestsPage /></Suspense>} />
         <Route path="hiring/received" element={<Suspense fallback={<LoadingState />}><HiringRequestsPage /></Suspense>} />
         <Route path="hiring/requests/:id" element={<Suspense fallback={<LoadingState />}><HiringRequestDetailsPage /></Suspense>} />
+        <Route path="workflows" element={<Suspense fallback={<LoadingState />}><WorkflowsOverviewPage /></Suspense>} />
+        <Route path="workflows/hierarchy" element={<Suspense fallback={<LoadingState />}><HierarchyPage /></Suspense>} />
+        <Route path="workflows/hiring" element={<Suspense fallback={<LoadingState />}><HiringSystemPage /></Suspense>} />
+        <Route path="workflows/termination" element={<Suspense fallback={<LoadingState />}><TerminationSystemPage /></Suspense>} />
+        <Route path="workflows/leave" element={<Suspense fallback={<LoadingState />}><LeaveSystemPage /></Suspense>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes></DepartmentProvider>
